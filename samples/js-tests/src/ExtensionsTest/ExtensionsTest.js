@@ -97,7 +97,7 @@ var extensionsTestItemNames = [
 ];
 
 if (cc.sys.os == cc.sys.OS_IOS || cc.sys.os == cc.sys.OS_ANDROID) {
-    extensionsTestItemNames.push({
+     extensionsTestItemNames.push({
         itemTitle:"PluginXTest",
         testScene:function () {
             var testScene = new PluginXTestScene();
