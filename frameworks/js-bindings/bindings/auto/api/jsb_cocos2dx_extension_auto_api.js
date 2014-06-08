@@ -413,7 +413,7 @@ bool
 /**
  * @method getTouchLocation
  * @param {cc.Touch} arg0
- * @return {cc.Vec2}
+ * @return {vec2_object}
  */
 getTouchLocation : function (
 touch 
@@ -534,7 +534,7 @@ state
 
 /**
  * @method setLabelAnchorPoint
- * @param {cc.Vec2} arg0
+ * @param {vec2_object} arg0
  */
 setLabelAnchorPoint : function (
 vec2 
@@ -544,7 +544,7 @@ vec2
 
 /**
  * @method getLabelAnchorPoint
- * @return {cc.Vec2}
+ * @return {vec2_object}
  */
 getLabelAnchorPoint : function (
 )
@@ -965,7 +965,7 @@ bool
 /**
  * @method initWithTargetAndPos
  * @param {cc.Node} arg0
- * @param {cc.Vec2} arg1
+ * @param {vec2_object} arg1
  * @return {bool}
  */
 initWithTargetAndPos : function (
@@ -988,7 +988,7 @@ float
 
 /**
  * @method getStartPos
- * @return {cc.Vec2}
+ * @return {vec2_object}
  */
 getStartPos : function (
 )
@@ -1069,7 +1069,7 @@ sprite
 /**
  * @method create
  * @param {cc.Node} arg0
- * @param {cc.Vec2} arg1
+ * @param {vec2_object} arg1
  * @return {cc.ControlHuePicker}
  */
 create : function (
@@ -1109,7 +1109,7 @@ getShadow : function (
 /**
  * @method initWithTargetAndPos
  * @param {cc.Node} arg0
- * @param {cc.Vec2} arg1
+ * @param {vec2_object} arg1
  * @return {bool}
  */
 initWithTargetAndPos : function (
@@ -1122,7 +1122,7 @@ vec2
 
 /**
  * @method getStartPos
- * @return {cc.Vec2}
+ * @return {vec2_object}
  */
 getStartPos : function (
 )
@@ -1193,7 +1193,7 @@ getBrightness : function (
 /**
  * @method create
  * @param {cc.Node} arg0
- * @param {cc.Vec2} arg1
+ * @param {vec2_object} arg1
  * @return {cc.ControlSaturationBrightnessPicker}
  */
 create : function (
@@ -1352,7 +1352,7 @@ cc.ControlPotentiometer = {
 
 /**
  * @method setPreviousLocation
- * @param {cc.Vec2} arg0
+ * @param {vec2_object} arg0
  */
 setPreviousLocation : function (
 vec2 
@@ -1392,10 +1392,10 @@ getMaximumValue : function (
 
 /**
  * @method angleInDegreesBetweenLineFromPoint_toPoint_toLineFromPoint_toPoint
- * @param {cc.Vec2} arg0
- * @param {cc.Vec2} arg1
- * @param {cc.Vec2} arg2
- * @param {cc.Vec2} arg3
+ * @param {vec2_object} arg0
+ * @param {vec2_object} arg1
+ * @param {vec2_object} arg2
+ * @param {vec2_object} arg3
  * @return {float}
  */
 angleInDegreesBetweenLineFromPoint_toPoint_toLineFromPoint_toPoint : function (
@@ -1410,7 +1410,7 @@ vec2
 
 /**
  * @method potentiometerBegan
- * @param {cc.Vec2} arg0
+ * @param {vec2_object} arg0
  */
 potentiometerBegan : function (
 vec2 
@@ -1460,7 +1460,7 @@ getValue : function (
 
 /**
  * @method getPreviousLocation
- * @return {cc.Vec2}
+ * @return {vec2_object}
  */
 getPreviousLocation : function (
 )
@@ -1470,8 +1470,8 @@ getPreviousLocation : function (
 
 /**
  * @method distanceBetweenPointAndPoint
- * @param {cc.Vec2} arg0
- * @param {cc.Vec2} arg1
+ * @param {vec2_object} arg0
+ * @param {vec2_object} arg1
  * @return {float}
  */
 distanceBetweenPointAndPoint : function (
@@ -1484,7 +1484,7 @@ vec2
 
 /**
  * @method potentiometerEnded
- * @param {cc.Vec2} arg0
+ * @param {vec2_object} arg0
  */
 potentiometerEnded : function (
 vec2 
@@ -1540,7 +1540,7 @@ sprite
 
 /**
  * @method potentiometerMoved
- * @param {cc.Vec2} arg0
+ * @param {vec2_object} arg0
  */
 potentiometerMoved : function (
 vec2 
@@ -1593,7 +1593,7 @@ getSelectedThumbSprite : function (
 /**
  * @method locationFromTouch
  * @param {cc.Touch} arg0
- * @return {cc.Vec2}
+ * @return {vec2_object}
  */
 locationFromTouch : function (
 touch 
@@ -1906,7 +1906,7 @@ getMinusSprite : function (
 
 /**
  * @method updateLayoutUsingTouchLocation
- * @param {cc.Vec2} arg0
+ * @param {vec2_object} arg0
  */
 updateLayoutUsingTouchLocation : function (
 vec2 
@@ -2163,7 +2163,7 @@ hasMoved : function (
 /**
  * @method locationFromTouch
  * @param {cc.Touch} arg0
- * @return {cc.Vec2}
+ * @return {vec2_object}
  */
 locationFromTouch : function (
 touch 
@@ -2232,7 +2232,7 @@ node
 
 /**
  * @method setContentOffsetInDuration
- * @param {cc.Vec2} arg0
+ * @param {vec2_object} arg0
  * @param {float} arg1
  */
 setContentOffsetInDuration : function (
@@ -2360,7 +2360,7 @@ init : function (
 
 /**
  * @method setContentOffset
- * @param {cc.Vec2} arg0
+ * @param {vec2_object} arg0
  * @param {bool} arg1
  */
 setContentOffset : function (
@@ -2412,7 +2412,7 @@ bool
 
 /**
  * @method getContentOffset
- * @return {cc.Vec2}
+ * @return {vec2_object}
  */
 getContentOffset : function (
 )
@@ -2462,7 +2462,7 @@ getViewSize : function (
 
 /**
  * @method maxContainerOffset
- * @return {cc.Vec2}
+ * @return {vec2_object}
  */
 maxContainerOffset : function (
 )
@@ -2494,7 +2494,7 @@ node
 
 /**
  * @method minContainerOffset
- * @return {cc.Vec2}
+ * @return {vec2_object}
  */
 minContainerOffset : function (
 )
@@ -2747,6 +2747,16 @@ getText : function (
 },
 
 /**
+ * @method setFontSize
+ * @param {int} arg0
+ */
+setFontSize : function (
+int 
+)
+{
+},
+
+/**
  * @method setPlaceholderFontName
  * @param {char} arg0
  */
@@ -2771,6 +2781,16 @@ getPlaceHolder : function (
  * @param {char} arg0
  */
 setFontName : function (
+char 
+)
+{
+},
+
+/**
+ * @method setText
+ * @param {char} arg0
+ */
+setText : function (
 char 
 )
 {
@@ -2823,16 +2843,6 @@ color3b
  */
 setPlaceholderFont : function (
 char, 
-int 
-)
-{
-},
-
-/**
- * @method setFontSize
- * @param {int} arg0
- */
-setFontSize : function (
 int 
 )
 {
@@ -2893,16 +2903,6 @@ getMaxLength : function (
 },
 
 /**
- * @method setText
- * @param {char} arg0
- */
-setText : function (
-char 
-)
-{
-},
-
-/**
  * @method setMaxLength
  * @param {int} arg0
  */
@@ -2947,6 +2947,292 @@ scale9sprite
  * @constructor
  */
 EditBox : function (
+)
+{
+},
+
+};
+
+/**
+ * @class EventAssetsManager
+ */
+cc.EventAssetsManager = {
+
+/**
+ * @method getAssetsManager
+ * @return {cc.AssetsManager}
+ */
+getAssetsManager : function (
+)
+{
+    return cc.AssetsManager;
+},
+
+/**
+ * @method getAssetId
+ * @return {String}
+ */
+getAssetId : function (
+)
+{
+    return ;
+},
+
+/**
+ * @method getCURLECode
+ * @return {int}
+ */
+getCURLECode : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getMessage
+ * @return {String}
+ */
+getMessage : function (
+)
+{
+    return ;
+},
+
+/**
+ * @method getCURLMCode
+ * @return {int}
+ */
+getCURLMCode : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getEventCode
+ * @return {cc.EventAssetsManager::EventCode}
+ */
+getEventCode : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getPercent
+ * @return {float}
+ */
+getPercent : function (
+)
+{
+    return 0;
+},
+
+};
+
+/**
+ * @class Manifest
+ */
+cc.Manifest = {
+
+/**
+ * @method getManifestFileUrl
+ * @return {String}
+ */
+getManifestFileUrl : function (
+)
+{
+    return ;
+},
+
+/**
+ * @method isVersionLoaded
+ * @return {bool}
+ */
+isVersionLoaded : function (
+)
+{
+    return false;
+},
+
+/**
+ * @method isLoaded
+ * @return {bool}
+ */
+isLoaded : function (
+)
+{
+    return false;
+},
+
+/**
+ * @method getPackageUrl
+ * @return {String}
+ */
+getPackageUrl : function (
+)
+{
+    return ;
+},
+
+/**
+ * @method getVersion
+ * @return {String}
+ */
+getVersion : function (
+)
+{
+    return ;
+},
+
+/**
+ * @method getVersionFileUrl
+ * @return {String}
+ */
+getVersionFileUrl : function (
+)
+{
+    return ;
+},
+
+};
+
+/**
+ * @class AssetsManager
+ */
+cc.AssetsManager = {
+
+/**
+ * @method getState
+ * @return {cc.AssetsManager::State}
+ */
+getState : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method checkUpdate
+ */
+checkUpdate : function (
+)
+{
+},
+
+/**
+ * @method getStoragePath
+ * @return {String}
+ */
+getStoragePath : function (
+)
+{
+    return ;
+},
+
+/**
+ * @method update
+ */
+update : function (
+)
+{
+},
+
+/**
+ * @method getLocalManifest
+ * @return {cc.Manifest}
+ */
+getLocalManifest : function (
+)
+{
+    return cc.Manifest;
+},
+
+/**
+ * @method getRemoteManifest
+ * @return {cc.Manifest}
+ */
+getRemoteManifest : function (
+)
+{
+    return cc.Manifest;
+},
+
+/**
+ * @method downloadFailedAssets
+ */
+downloadFailedAssets : function (
+)
+{
+},
+
+/**
+ * @method create
+ * @param {String} arg0
+ * @param {String} arg1
+ * @return {cc.AssetsManager}
+ */
+create : function (
+str, 
+str 
+)
+{
+    return cc.AssetsManager;
+},
+
+/**
+ * @method AssetsManager
+ * @constructor
+ * @param {String} arg0
+ * @param {String} arg1
+ */
+AssetsManager : function (
+str, 
+str 
+)
+{
+},
+
+};
+
+/**
+ * @class EventListenerAssetsManager
+ */
+cc.EventListenerAssetsManager = {
+
+/**
+ * @method init
+ * @param {cc.AssetsManager} arg0
+ * @param {function} arg1
+ * @return {bool}
+ */
+init : function (
+assetsmanager, 
+func 
+)
+{
+    return false;
+},
+
+/**
+ * @method create
+ * @param {cc.AssetsManager} arg0
+ * @param {function} arg1
+ * @return {cc.EventListenerAssetsManager}
+ */
+create : function (
+assetsmanager, 
+func 
+)
+{
+    return cc.EventListenerAssetsManager;
+},
+
+/**
+ * @method EventListenerAssetsManager
+ * @constructor
+ */
+EventListenerAssetsManager : function (
 )
 {
 },
