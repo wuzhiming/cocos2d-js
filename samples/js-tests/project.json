@@ -17,6 +17,8 @@
         "src/PathTest/PathTest.js",
         "src/LoaderTest/LoaderTest.js",
 
+        "src/BakeLayerTest/BakeLayerTest.js",
+
         "src/TouchesTest/Ball.js",
         "src/TouchesTest/Paddle.js",
         "src/TouchesTest/TouchesTest.js",
@@ -144,6 +146,7 @@
         "src/Box2dTest/Box2dTest.js",
         "src/ChipmunkTest/ChipmunkTest.js",
 
-        "src/Presentation/Presentation.js"
+        "src/Presentation/Presentation.js",
+        "src/ReflectionTest/ReflectionTest.js"
     ]
 }

@@ -1274,6 +1274,16 @@ getOpacity : function (
 },
 
 /**
+ * @method setNormalizedPosition
+ * @param {vec2_object} arg0
+ */
+setNormalizedPosition : function (
+vec2 
+)
+{
+},
+
+/**
  * @method convertTouchToNodeSpace
  * @param {cc.Touch} arg0
  * @return {vec2_object}
@@ -1488,6 +1498,16 @@ updateTransform : function (
 },
 
 /**
+ * @method setGLProgram
+ * @param {cc.GLProgram} arg0
+ */
+setGLProgram : function (
+glprogram 
+)
+{
+},
+
+/**
  * @method isVisible
  * @return {bool}
  */
@@ -1532,17 +1552,15 @@ component
 },
 
 /**
- * @method visit
-* @param {cc.Renderer} renderer
-* @param {mat4_object} mat4
-* @param {bool} bool
-*/
-visit : function(
-renderer,
-mat4,
-bool 
+ * @method runAction
+ * @param {cc.Action} arg0
+ * @return {cc.Action}
+ */
+runAction : function (
+action 
 )
 {
+    return cc.Action;
 },
 
 /**
@@ -1576,15 +1594,17 @@ getAnchorPointInPoints : function (
 },
 
 /**
- * @method runAction
- * @param {cc.Action} arg0
- * @return {cc.Action}
- */
-runAction : function (
-action 
+ * @method visit
+* @param {cc.Renderer} renderer
+* @param {mat4_object} mat4
+* @param {unsigned int} int
+*/
+visit : function(
+renderer,
+mat4,
+int 
 )
 {
-    return cc.Action;
 },
 
 /**
@@ -2050,12 +2070,12 @@ getGlobalZOrder : function (
  * @method draw
 * @param {cc.Renderer} renderer
 * @param {mat4_object} mat4
-* @param {bool} bool
+* @param {unsigned int} int
 */
 draw : function(
 renderer,
 mat4,
-bool 
+int 
 )
 {
 },
@@ -2119,16 +2139,6 @@ getWorldToNodeTransform : function (
 },
 
 /**
- * @method setGLProgram
- * @param {cc.GLProgram} arg0
- */
-setGLProgram : function (
-glprogram 
-)
-{
-},
-
-/**
  * @method getScale
  * @return {float}
  */
@@ -2136,6 +2146,16 @@ getScale : function (
 )
 {
     return 0;
+},
+
+/**
+ * @method getNormalizedPosition
+ * @return {vec2_object}
+ */
+getNormalizedPosition : function (
+)
+{
+    return cc.Vec2;
 },
 
 /**
@@ -2223,6 +2243,15 @@ Node : function (
  * @class __NodeRGBA
  */
 cc.NodeRGBA = {
+
+/**
+ * @method __NodeRGBA
+ * @constructor
+ */
+__NodeRGBA : function (
+)
+{
+},
 
 };
 
@@ -3144,11 +3173,39 @@ str
 },
 
 /**
+ * @method removeFile
+ * @param {String} arg0
+ * @return {bool}
+ */
+removeFile : function (
+str 
+)
+{
+    return false;
+},
+
+/**
  * @method isAbsolutePath
  * @param {String} arg0
  * @return {bool}
  */
 isAbsolutePath : function (
+str 
+)
+{
+    return false;
+},
+
+/**
+ * @method renameFile
+ * @param {String} arg0
+ * @param {String} arg1
+ * @param {String} arg2
+ * @return {bool}
+ */
+renameFile : function (
+str, 
+str, 
 str 
 )
 {
@@ -3214,6 +3271,44 @@ str
 },
 
 /**
+ * @method getFileSize
+ * @param {String} arg0
+ * @return {long}
+ */
+getFileSize : function (
+str 
+)
+{
+    return 0;
+},
+
+/**
+ * @method removeDirectory
+ * @param {String} arg0
+ * @return {bool}
+ */
+removeDirectory : function (
+str 
+)
+{
+    return false;
+},
+
+/**
+ * @method writeStringToFile
+ * @param {String} arg0
+ * @param {String} arg1
+ * @return {bool}
+ */
+writeStringToFile : function (
+str, 
+str 
+)
+{
+    return false;
+},
+
+/**
  * @method addSearchPath
  * @param {String} arg0
  */
@@ -3255,6 +3350,42 @@ str
 )
 {
     return ;
+},
+
+/**
+ * @method isDirectoryExist
+ * @param {String} arg0
+ * @return {bool}
+ */
+isDirectoryExist : function (
+str 
+)
+{
+    return false;
+},
+
+/**
+ * @method createDirectory
+ * @param {String} arg0
+ * @return {bool}
+ */
+createDirectory : function (
+str 
+)
+{
+    return false;
+},
+
+/**
+ * @method createDirectories
+ * @param {String} arg0
+ * @return {bool}
+ */
+createDirectories : function (
+str 
+)
+{
+    return false;
 },
 
 /**
@@ -3917,23 +4048,13 @@ texture2d
 },
 
 /**
- * @method initWithTexture
-* @param {cc.Texture2D|cc.Texture2D} texture2d
-* @param {rect_object|rect_object} rect
-* @param {bool} bool
-* @param {vec2_object} vec2
-* @param {size_object} size
-* @return {bool|bool}
-*/
-initWithTexture : function(
-texture2d,
-rect,
-bool,
-vec2,
-size 
+ * @method getOffset
+ * @return {vec2_object}
+ */
+getOffset : function (
 )
 {
-    return false;
+    return cc.Vec2;
 },
 
 /**
@@ -4027,13 +4148,23 @@ vec2
 },
 
 /**
- * @method getOffset
- * @return {vec2_object}
- */
-getOffset : function (
+ * @method initWithTexture
+* @param {cc.Texture2D|cc.Texture2D} texture2d
+* @param {rect_object|rect_object} rect
+* @param {bool} bool
+* @param {vec2_object} vec2
+* @param {size_object} size
+* @return {bool|bool}
+*/
+initWithTexture : function(
+texture2d,
+rect,
+bool,
+vec2,
+size 
 )
 {
-    return cc.Vec2;
+    return false;
 },
 
 /**
@@ -4134,6 +4265,15 @@ size
 )
 {
     return cc.SpriteFrame;
+},
+
+/**
+ * @method SpriteFrame
+ * @constructor
+ */
+SpriteFrame : function (
+)
+{
 },
 
 };
@@ -9075,11 +9215,11 @@ getBlendFunc : function (
 /**
  * @method onDraw
  * @param {mat4_object} arg0
- * @param {bool} arg1
+ * @param {unsigned int} arg1
  */
 onDraw : function (
 mat4, 
-bool 
+int 
 )
 {
 },
@@ -11197,6 +11337,28 @@ LayerMultiplex : function (
 cc.Scene = {
 
 /**
+ * @method initWithSize
+ * @param {size_object} arg0
+ * @return {bool}
+ */
+initWithSize : function (
+size 
+)
+{
+    return false;
+},
+
+/**
+ * @method init
+ * @return {bool}
+ */
+init : function (
+)
+{
+    return false;
+},
+
+/**
  * @method initWithPhysics
  * @return {bool}
  */
@@ -11214,6 +11376,18 @@ getPhysicsWorld : function (
 )
 {
     return cc.PhysicsWorld;
+},
+
+/**
+ * @method createWithSize
+ * @param {size_object} arg0
+ * @return {cc.Scene}
+ */
+createWithSize : function (
+size 
+)
+{
+    return cc.Scene;
 },
 
 /**
@@ -13948,12 +14122,14 @@ begin : function (
 /**
  * @method saveToFile
 * @param {String|String} str
-* @param {cc.Image::Format} format
+* @param {cc.Image::Format|bool} format
+* @param {bool} bool
 * @return {bool|bool}
 */
 saveToFile : function(
 str,
-format 
+format,
+bool 
 )
 {
     return false;
@@ -16490,6 +16666,14 @@ str
 },
 
 /**
+ * @method unbindAllImageAsync
+ */
+unbindAllImageAsync : function (
+)
+{
+},
+
+/**
  * @method removeTextureForKey
  * @param {String} arg0
  */
@@ -16551,6 +16735,16 @@ str
 )
 {
     return cc.Texture2D;
+},
+
+/**
+ * @method unbindImageAsync
+ * @param {String} arg0
+ */
+unbindImageAsync : function (
+str 
+)
+{
 },
 
 /**
