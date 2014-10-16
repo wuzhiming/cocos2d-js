@@ -30,7 +30,7 @@ var button_share = {
     "getToken": "getTokenClick",
     "getPermissions": "getPermissionClick",
     "request API": "requestClick",
-    "publishInstall": "publicInstallClick",
+    "activateApp": "activateAppClick",
     "logEvent": "LogEventClick",
     "logPurchase": "LogPurchaseClick"
 
@@ -61,35 +61,41 @@ var FacebookUserTest = PluginXTest.extend({
         this.result.boundingWidth = this.result.width;
         this.addChild(this.result, 1);
     },
-    publicInstallClick: function () {
-        facebook.activateApp();
-        this.result.setString("activateApp is invoked");
+    activateAppClick: function () {
+        if (cc.sys.isNative) {
+            facebook.activateApp();
+            this.result.setString("activateApp is invoked");
+        }
+        else {
+            this.result.setString("activateApp is only available for Facebook Canvas App");
+        }
     },
     LogEventClick: function () {
-        var parameters = {};
-        var floatVal = 888.888;
-        parameters[plugin.FacebookAgent.AppEventParam.SUCCESS] = plugin.FacebookAgent.AppEventParamValue.VALUE_YES;
-//        facebook.logEvent(plugin.FacebookAgent.AppEvent.COMPLETED_TUTORIAL);
-        facebook.logEvent(plugin.FacebookAgent.AppEvent.COMPLETED_TUTORIAL, floatVal);
-        facebook.logEvent(plugin.FacebookAgent.AppEvent.COMPLETED_TUTORIAL, parameters);
-        facebook.logEvent(plugin.FacebookAgent.AppEvent.COMPLETED_TUTORIAL, floatVal, parameters);
-        this.result.setString("logEvent is invoked");
+        if (cc.sys.isNative) {
+            var parameters = {};
+            var floatVal = 888.888;
+            parameters[plugin.FacebookAgent.AppEventParam.SUCCESS] = plugin.FacebookAgent.AppEventParamValue.VALUE_YES;
+    //        facebook.logEvent(plugin.FacebookAgent.AppEvent.COMPLETED_TUTORIAL);
+            facebook.logEvent(plugin.FacebookAgent.AppEvent.COMPLETED_TUTORIAL, floatVal);
+            facebook.logEvent(plugin.FacebookAgent.AppEvent.COMPLETED_TUTORIAL, parameters);
+            facebook.logEvent(plugin.FacebookAgent.AppEvent.COMPLETED_TUTORIAL, floatVal, parameters);
+            this.result.setString("logEvent is invoked");
+        }
+        else {
+            this.result.setString("LogEvent is only available for Facebook Canvas App");
+        }
     },
     loginClick: function (sender) {
         var self = this;
-        facebook.isLoggedIn(function (type, msg) {
-            if (type == plugin.FacebookAgent.CODE_SUCCEED) {
-                if (msg["isLoggedIn"]) {
-                    self.result.setString("logged in");
-                } else {
-                    facebook.login(function (type, msg) {
-                        self.result.setString("type is " + type + " msg is " + JSON.stringify(msg));
-                    });
-                }
-            } else {
-                self.result.setString("error");
-            }
-        });
+
+        if (facebook.isLoggedIn()) {
+            self.result.setString("logged in");
+        }
+        else {
+            facebook.login(function (type, msg) {
+                self.result.setString("type is " + type + " msg is " + JSON.stringify(msg));
+            });
+        }
     },
     logoutClick: function (sender) {
         var self = this;
@@ -99,19 +105,23 @@ var FacebookUserTest = PluginXTest.extend({
     },
     getUidClick: function (sender) {
         var self = this;
-        if (facebook.isLoggedIn(function (errorCode, msg) {
-            if (errorCode == plugin.FacebookAgent.CODE_SUCCEED) {
-                self.result.setString(facebook.getUserID());
-            }
-        }));
+
+        if (facebook.isLoggedIn()) {
+            self.result.setString(facebook.getUserID());
+        }
+        else {
+            self.result.setString("User haven't been logged in");
+        }
     },
     getTokenClick: function (sender) {
         var self = this;
-        facebook.requestAccessToken(function (type, msg) {
-            if (type == plugin.FacebookAgent.CODE_SUCCEED) {
-                self.result.setString(msg["accessToken"]);
-            }
-        });
+
+        if (facebook.isLoggedIn()) {
+            self.result.setString(facebook.getAccessToken());
+        }
+        else {
+            self.result.setString("User haven't been logged in");
+        }
     },
 
     loginWithPermissionClick: function (sender) {
@@ -125,10 +135,13 @@ var FacebookUserTest = PluginXTest.extend({
     },
     getPermissionClick: function (sender) {
         var self = this;
-        facebook.getPermissionList(function (type, data) {
+        facebook.api("/me/permissions", plugin.FacebookAgent.HttpMethod.GET, {}, function (type, data) {
             if (type == plugin.FacebookAgent.CODE_SUCCEED) {
                 data = JSON.stringify(data);
                 self.result.setString(data);
+            }
+            else {
+                self.result.setString(JSON.stringify(data));
             }
         });
     },
@@ -141,11 +154,28 @@ var FacebookUserTest = PluginXTest.extend({
         });
     },
     LogPurchaseClick: function (sender) {
-        cc.log("in purchase");
-        facebook.logPurchase(1.23, "CNY", {"cocos2d": 1, "js": 2});
+        if (cc.sys.isNative) {
+            var params = {};
+            // All supported parameters are listed here
+            params[plugin.FacebookAgent.AppEventParam.CURRENCY] = "CNY";
+            params[plugin.FacebookAgent.AppEventParam.REGISTRATION_METHOD] = "Facebook";
+            params[plugin.FacebookAgent.AppEventParam.CONTENT_TYPE] = "game";
+            params[plugin.FacebookAgent.AppEventParam.CONTENT_ID] = "201410102342";
+            params[plugin.FacebookAgent.AppEventParam.SEARCH_STRING] = "cocos2djs";
+            params[plugin.FacebookAgent.AppEventParam.SUCCESS] = plugin.FacebookAgent.AppEventParamValue.VALUE_YES;
+            params[plugin.FacebookAgent.AppEventParam.MAX_RATING_VALUE] = "10";
+            params[plugin.FacebookAgent.AppEventParam.PAYMENT_INFO_AVAILABLE] = plugin.FacebookAgent.AppEventParamValue.VALUE_YES;
+            params[plugin.FacebookAgent.AppEventParam.NUM_ITEMS] = "99";
+            params[plugin.FacebookAgent.AppEventParam.LEVEL] = "10";
+            params[plugin.FacebookAgent.AppEventParam.DESCRIPTION] = "Cocos2d-JS";
+            facebook.logPurchase(1.23, "CNY", params);
+            this.result.setString("Purchase logged.");
+        }
+        else {
+            this.result.setString("LogPurchase is only available for Facebook Canvas App");
+        }
     },
     onNextCallback: function (sender) {
-
         var s = new PluginXTestScene();
         s.addChild(new PluginXTestLayer());
         director.runScene(s);

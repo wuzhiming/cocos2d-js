@@ -114,6 +114,13 @@ var extensionsTestItemNames = [
                 cc.log("Plugin-x doesn't support desktop platforms.");
             }
         }
+    },
+    {
+        itemTitle:"ActionTimelineTestScene",
+        testScene:function () {
+            var scene = new ActionTimelineTestScene();
+            scene.runThisTest();
+        }
     }
 ];
 if (cc.sys.isNative && cc.sys.OS_WINDOWS != cc.sys.os) {

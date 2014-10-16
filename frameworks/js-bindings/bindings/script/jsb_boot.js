@@ -472,16 +472,26 @@ cc.loader = {
         var l = arguments.length;
         if(l == 2) cb = option;
 
-        jsb.loadRemoteImg(url, function(succeed, tex) {
-            if (succeed) {
-                if(!cb) return;
-                cb(null, tex);
-            }
-            else {
-                if(!cb) return;
-                cb("Load image failed");
-            }
-        });
+        var cachedTex = cc.textureCache.getTextureForKey(url);
+        if (cachedTex) {
+            cb && cb(null, cachedTex);
+        }
+        else if (url.match(jsb.urlRegExp)) {
+            jsb.loadRemoteImg(url, function(succeed, tex) {
+                if (succeed) {
+                    cb && cb(null, tex);
+                }
+                else {
+                    cb && cb("Load image failed");
+                }
+            });
+        }
+        else {
+            var tex = cc.textureCache._addImage(url);
+            if (tex instanceof cc.Texture2D)
+                cb && cb(null, tex);
+            else cb && cb("Load image failed");
+        }
     },
     /**
      * Load binary data by url.
@@ -517,7 +527,10 @@ cc.loader = {
         var obj = self.cache[url];
         if (obj)
             return cb(null, obj);
-        var loader = self._register[type.toLowerCase()];
+        var loader = null;
+        if (type) {
+            loader = self._register[type.toLowerCase()];
+        }
         if (!loader) {
             cc.error("loader for [" + type + "] not exists!");
             return cb();
@@ -660,12 +673,14 @@ cc.loader = {
      * @returns {*}
      */
     getRes : function(url){
-        var self = this;
+        var cached = this.cache[url];
+        if (cached)
+            return cached;
         var type = cc.path.extname(url);
-        var loader = self._register[type.toLowerCase()];
+        var loader = this._register[type.toLowerCase()];
         if(!loader) return cc.log("loader for [" + type + "] not exists!");
-        var basePath = loader.getBasePath ? loader.getBasePath() : self.resPath;
-        var realUrl = self.getUrl(basePath, url);
+        var basePath = loader.getBasePath ? loader.getBasePath() : this.resPath;
+        var realUrl = this.getUrl(basePath, url);
         return loader.load(realUrl, url);
     },
     
@@ -715,12 +730,10 @@ cc.formatStr = function(){
     var str = args[0];
     var needToFormat = true;
     if(typeof str == "object"){
-        str = JSON.stringify(str);
         needToFormat = false;
     }
     for(var i = 1; i < l; ++i){
         var arg = args[i];
-        arg = typeof arg == "object" ? JSON.stringify(arg) : arg;
         if(needToFormat){
             while(true){
                 var result = null;
@@ -797,6 +810,12 @@ cc.view.setResolutionPolicy = function(resolutionPolicy){
 cc.view.setContentTranslateLeftTop = function(){return;};
 cc.view.getContentTranslateLeftTop = function(){return null;};
 cc.view.setFrameZoomFactor = function(){return;};
+cc.DENSITYDPI_DEVICE = "device-dpi";
+cc.DENSITYDPI_HIGH = "high-dpi";
+cc.DENSITYDPI_MEDIUM = "medium-dpi";
+cc.DENSITYDPI_LOW = "low-dpi";
+cc.view.setTargetDensityDPI = function() {};
+cc.view.getTargetDensityDPI = function() {return cc.DENSITYDPI_DEVICE;};
 
 /**
  * @type {Object}
@@ -827,32 +846,15 @@ cc.configuration = cc.Configuration.getInstance();
 cc.textureCache = cc.director.getTextureCache();
 cc.TextureCache.prototype._addImage = cc.TextureCache.prototype.addImage;
 cc.TextureCache.prototype.addImage = function(url, cb, target) {
-    var cachedTex = this.getTextureForKey(url);
-    if (cachedTex) {
-        cb && cb.call(target, cachedTex);
-        return cachedTex;
-    }
-    if (url.match(jsb.urlRegExp)) {
-        jsb.loadRemoteImg(url, function(succeed, tex) {
-            if (succeed) {
-                if(!cb) return;
-                cb.call(target, tex);
-            }
-            else {
-                if(!cb) return;
-                cb.call(target, null);
-            }
-        });
-    }
-    else {
+    var localTex = null;
+    cc.loader.loadImg(url, function(err, tex) {
+        if (err) tex = null;
         if (cb) {
-            target && (cb = cb.bind(target));
-            this.addImageAsync(url, cb);
+            cb.call(target, tex);
         }
-        else {
-            return this._addImage(url);
-        }
-    }
+        localTex = tex;
+    });
+    return localTex;
 };
 /**
  * @type {Object}
@@ -881,6 +883,9 @@ cc.plistParser = cc.PlistParser.getInstance();
 
 // File utils (Temporary, won't be accessible)
 cc.fileUtils = cc.FileUtils.getInstance();
+
+ccs.nodeReader = ccs.NodeReader.getInstance();
+ccs.actionTimelineCache = ccs.ActionTimelineCache.getInstance();
 
 /**
  * @type {Object}
@@ -1078,6 +1083,19 @@ cc._initSys = function(config, CONFIG_KEY){
      * @type {Number}
      */
     locSys.LANGUAGE_SPANISH = "es";
+    
+    /**
+     * Netherlands language code
+     * @type {string}
+     */
+    locSys.LANGUAGE_DUTCH = "nl";
+    /**
+     * Dutch language code
+     * @constant
+     * @default
+     * @type {Number}
+     */
+    locSys.LANGUAGE_DUTCH = "du";
     /**
      * Russian language code
      * @constant
@@ -1328,14 +1346,15 @@ cc._initSys = function(config, CONFIG_KEY){
             case 3: return locSys.LANGUAGE_ITALIAN;
             case 4: return locSys.LANGUAGE_GERMAN;
             case 5: return locSys.LANGUAGE_SPANISH;
-            case 6: return locSys.LANGUAGE_RUSSIAN;
-            case 7: return locSys.LANGUAGE_KOREAN;
-            case 8: return locSys.LANGUAGE_JAPANESE;
-            case 9: return locSys.LANGUAGE_HUNGARIAN;
-            case 10: return locSys.LANGUAGE_PORTUGUESE;
-            case 11: return locSys.LANGUAGE_ARABIC;
-            case 12: return locSys.LANGUAGE_NORWEGIAN;
-            case 13: return locSys.LANGUAGE_POLISH;
+            case 6: return locSys.LANGUAGE_DUTCH;
+            case 7: return locSys.LANGUAGE_RUSSIAN;
+            case 8: return locSys.LANGUAGE_KOREAN;
+            case 9: return locSys.LANGUAGE_JAPANESE;
+            case 10: return locSys.LANGUAGE_HUNGARIAN;
+            case 11: return locSys.LANGUAGE_PORTUGUESE;
+            case 12: return locSys.LANGUAGE_ARABIC;
+            case 13: return locSys.LANGUAGE_NORWEGIAN;
+            case 14: return locSys.LANGUAGE_POLISH;
             default : return locSys.LANGUAGE_ENGLISH;
         }
     })();
@@ -1366,15 +1385,26 @@ cc._initDebugSetting = function (mode) {
     cc.log = cc.warn = cc.error = cc.assert = function(){};
     if(mode == ccGame.DEBUG_MODE_NONE){
     }else{
-        cc.error = bakLog.bind(cc);
+        cc.error = function(){
+            bakLog.call(this, "ERROR :  " + cc.formatStr.apply(cc, arguments));
+        };
         cc.assert = function(cond, msg) {
-            if (!cond) cc.log("Assert: " + msg);
+            if (!cond && msg) {
+                var args = [];
+                for (var i = 1; i < arguments.length; i++)
+                    args.push(arguments[i]);
+                bakLog("Assert: " + cc.formatStr.apply(cc, args));
+            }
         };
         if(mode != ccGame.DEBUG_MODE_ERROR && mode != ccGame.DEBUG_MODE_ERROR_FOR_WEB_PAGE){
-            cc.warn = bakLog.bind(cc);
+            cc.warn = function(){
+                bakLog.call(this, "WARN :  " + cc.formatStr.apply(cc, arguments));
+            };
         }
         if(mode == ccGame.DEBUG_MODE_INFO || mode == ccGame.DEBUG_MODE_INFO_FOR_WEB_PAGE){
-            cc.log = bakLog;
+            cc.log = function(){
+                bakLog.call(this, cc.formatStr.apply(cc, arguments));
+            };
         }
     }
 };
@@ -1507,7 +1537,7 @@ cc.game = {
             var data = JSON.parse(txt);
             this.config = _init(data || {});
         }catch(e){
-	        cc.log("Failed to read or parse project.json");
+            cc.log("Failed to read or parse project.json");
             this.config = _init({});
         }
 //        cc._initDebugSetting(this.config[CONFIG_KEY.debugMode]);
@@ -1567,6 +1597,39 @@ else if(window.JavaScriptObjCBridge && (cc.sys.os == cc.sys.OS_IOS || cc.sys.os 
     jsb.reflection = new JavaScriptObjCBridge();
 }
 
-jsb.urlRegExp = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+jsb.urlRegExp = new RegExp(
+    "^" +
+        // protocol identifier
+        "(?:(?:https?|ftp)://)" +
+        // user:pass authentication
+        "(?:\\S+(?::\\S*)?@)?" +
+        "(?:" +
+            // IP address exclusion
+            // private & local networks
+            "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +
+            "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +
+            "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
+            // IP address dotted notation octets
+            // excludes loopback network 0.0.0.0
+            // excludes reserved space >= 224.0.0.0
+            // excludes network & broacast addresses
+            // (first & last IP address of each class)
+            "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+            "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+            "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+        "|" +
+            // host name
+            "(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)" +
+            // domain name
+            "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*" +
+            // TLD identifier
+            "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" +
+        ")" +
+        // port number
+        "(?::\\d{2,5})?" +
+        // resource path
+        "(?:/\\S*)?" +
+    "$", "i"
+);
 
 //+++++++++++++++++++++++++other initializations end+++++++++++++++++++++++++++++
