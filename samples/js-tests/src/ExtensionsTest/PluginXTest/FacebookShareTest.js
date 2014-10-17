@@ -107,7 +107,7 @@ var FacebookShareTest = PluginXTest.extend({
 
     onShareSimpleLink: function (){
         var map = {
-            "dialog": "share_link",
+            "dialog": "shareLink",
             "link": "http://www.cocos2d-x.org"
         };
         var self = this;
@@ -116,7 +116,7 @@ var FacebookShareTest = PluginXTest.extend({
                 self.showDisableTips(JSON.stringify(msg));
             });
         }else{
-            map["dialog"] = "feed_dialog";
+            map["dialog"] = "feedDialog";
             facebook.dialog(map,function(errorCode,msg){
                 self.showDisableTips(JSON.stringify(msg));
             });
@@ -124,7 +124,7 @@ var FacebookShareTest = PluginXTest.extend({
     },
     onShareTextInfoLink: function (){
         var map = {
-            "dialog": "share_link",
+            "dialog": "shareLink",
             "name": "Cocos2d-JS web site",
             "caption": "Cocos2d-JS caption",
             "description":"Cocos2d-JS description",
@@ -136,7 +136,7 @@ var FacebookShareTest = PluginXTest.extend({
                 self.showDisableTips(JSON.stringify(msg));
             });
         }else{
-            map["dialog"] = "feed_dialog";
+            map["dialog"] = "feedDialog";
             facebook.dialog(map,function(errorCode,msg){
                 self.showDisableTips(JSON.stringify(msg));
             });
@@ -144,7 +144,7 @@ var FacebookShareTest = PluginXTest.extend({
     },
     onSharePictureInfoLink: function (){
         var map = {
-            "dialog": "share_link",
+            "dialog": "shareLink",
             "name": "Cocos2d-JS web site",
             "caption": "Cocos2d-JS caption",
             "description":"Cocos2d-JS description",
@@ -158,7 +158,7 @@ var FacebookShareTest = PluginXTest.extend({
                 self.showDisableTips(JSON.stringify(msg));
             });
         }else{
-            map["dialog"] = "feed_dialog";
+            map["dialog"] = "feedDialog";
             facebook.dialog(map,function(errorCode,msg){
                 self.showDisableTips(JSON.stringify(msg));
             });
@@ -166,7 +166,7 @@ var FacebookShareTest = PluginXTest.extend({
     },
     onShareMediaSource: function () {
         var map = {
-            "dialog": "feed_dialog",
+            "dialog": "feedDialog",
             "name": "Cocos2d-JS web site",
             "caption": "Cocos2d-JS caption",
             "description":"Cocos2d-JS description",
@@ -204,7 +204,7 @@ var FacebookShareTest = PluginXTest.extend({
     },
     onShareOG: function () {
         var map = {
-            "dialog": "share_open_graph",
+            "dialog": "shareOpenGraph",
             "action_type": "cocostestmyfc:share",
             "preview_property_name": "cocos_document",
             "title": "Cocos2d-JS Game Engine",
@@ -215,10 +215,11 @@ var FacebookShareTest = PluginXTest.extend({
         var self = this;
         if(facebook.canPresentDialog(map)){
             facebook.dialog(map, function (resultcode, msg) {
+                cc.log(JSON.stringify(msg));
                 self.showDisableTips(JSON.stringify(msg));
             });
         }else{
-            self.showDisableTips("Can't open dialog for share_open_graph");
+            self.showDisableTips("Can't open dialog for shareOpenGraph");
         }
 
 
@@ -235,7 +236,7 @@ var FacebookShareTest = PluginXTest.extend({
         var delay = cc.delayTime(2);
         var share = cc.callFunc(function () {
             var map = {
-                "dialog": "share_photo",
+                "dialog": "sharePhoto",
                 "photo": img
             };
 
@@ -244,7 +245,7 @@ var FacebookShareTest = PluginXTest.extend({
                     self.showDisableTips(JSON.stringify(msg));
                 });
             }else{
-                self.showDisableTips("Can't open dialog for share_photo");
+                self.showDisableTips("Can't open dialog for sharePhoto");
             }
         });
         var seq = cc.sequence(delay, share);
@@ -258,7 +259,7 @@ var FacebookShareTest = PluginXTest.extend({
             return;
         }
         var map = {
-            "dialog": "message_link",
+            "dialog": "messageLink",
             "description": "Cocos2d-JS is a great game engine",
             "title": "Cocos2d-JS",
             "link": "http://www.cocos2d-x.org",
@@ -270,7 +271,7 @@ var FacebookShareTest = PluginXTest.extend({
                 self.showDisableTips(JSON.stringify(msg));
             });
         }else{
-            this.showDisableTips("Can't open dialog for message_link");
+            this.showDisableTips("Can't open dialog for messageLink");
         }
     },
 
@@ -280,7 +281,7 @@ var FacebookShareTest = PluginXTest.extend({
             return;
         }
         var map = {
-            "dialog": "message_open_graph",
+            "dialog": "messageOpenGraph",
             "action_type": "cocostestmyfc:share",
             "preview_property_name": "cocos_document",
             "title": "Cocos2d-JS Game Engine",
@@ -294,7 +295,7 @@ var FacebookShareTest = PluginXTest.extend({
                 self.showDisableTips(JSON.stringify(msg));
             });
         }else{
-            this.showDisableTips("Can't open dialog for message_open_graph");
+            this.showDisableTips("Can't open dialog for messageOpenGraph");
         }
     },
 
@@ -309,7 +310,7 @@ var FacebookShareTest = PluginXTest.extend({
         var delay = cc.delayTime(2);
         var share = cc.callFunc(function () {
             var map = {
-                "dialog": "message_photo",
+                "dialog": "messagePhoto",
                 "photo": img
             };
             if(facebook.canPresentDialog(map)){
@@ -317,7 +318,7 @@ var FacebookShareTest = PluginXTest.extend({
                     self.showDisableTips(JSON.stringify(msg));
                 });
             }else{
-                self.showDisableTips("Can't open dialog for message_photo");
+                self.showDisableTips("Can't open dialog for messagePhoto");
             }
         });
         var seq = cc.sequence(delay, share);
@@ -354,7 +355,7 @@ var FacebookShareTest = PluginXTest.extend({
         var map = {
             "message": "Cocos2d-JS is a great game engine",
             "title": "Cocos2d-JS title",
-            "filters": '[{"name":"company", "user_ids":["100006738453912","10204182777160522"]}]'
+            "filters": '[{"user_ids":["100006738453912","10204182777160522"]}]'
         };
         var self = this;
         // android not support filters
@@ -367,7 +368,7 @@ var FacebookShareTest = PluginXTest.extend({
             "message": "Cocos2d-JS is a great game engine",
             "to": "100006738453912",
             "action_type":"send",
-            "object_id":"191181717736427"// 191181717736427   1426774790893461
+            "object_id":"563764423729162"// 191181717736427   1426774790893461
         };
         var self = this;
         // android not support action_type
