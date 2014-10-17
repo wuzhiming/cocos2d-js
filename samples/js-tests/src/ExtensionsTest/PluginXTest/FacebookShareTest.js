@@ -355,7 +355,7 @@ var FacebookShareTest = PluginXTest.extend({
         var map = {
             "message": "Cocos2d-JS is a great game engine",
             "title": "Cocos2d-JS title",
-            "filters": '[{"user_ids":["100006738453912","10204182777160522"]}]'
+            "filters": '[{"name":"company", "user_ids":["100006738453912","10204182777160522"]}]'
         };
         var self = this;
         // android not support filters
