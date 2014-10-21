@@ -883,9 +883,15 @@ cc.plistParser = cc.PlistParser.getInstance();
 
 // File utils (Temporary, won't be accessible)
 cc.fileUtils = cc.FileUtils.getInstance();
+cc.fileUtils.setPopupNotify(false);
 
-ccs.nodeReader = ccs.NodeReader.getInstance();
+//ccs.nodeReader = ccs.NodeReader.getInstance();
 ccs.actionTimelineCache = ccs.ActionTimelineCache.getInstance();
+ccs.actionTimelineCache.createAction = ccs.ActionTimelineCache.createAction;
+
+ccs.csLoader = ccs.CSLoader.getInstance();
+ccs.csLoader.createNode = ccs.CSLoader.createNode;
+ccs.csLoader.createTimeLine = ccs.CSLoader.createTimeLine;
 
 /**
  * @type {Object}
@@ -908,6 +914,9 @@ cc.screen = {
         onFullScreenChange.call();
     }
 };
+
+cc.EditBox = ccui.EditBox;
+delete ccui.EditBox;
 
 // GUI
 /**
