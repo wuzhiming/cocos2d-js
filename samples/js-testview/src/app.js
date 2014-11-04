@@ -64,6 +64,24 @@ var HelloWorldLayer = cc.Layer.extend({
                 cc.tintTo(2.5,255,125,0)
             )
         );
+
+        cc.eventManager.addListener({
+            event: cc.EventListener.KEYBOARD,
+            onKeyPressed:  function(keyCode, event){
+                //var label = event.getCurrentTarget();
+                //通过判断keyCode来确定用户按下了哪个键
+                //label.setString("Key " + keyCode.toString() + " was pressed!");
+            },
+            onKeyReleased: function(keyCode, event){
+                //var label = event.getCurrentTarget();
+                //label.setString("Key " + keyCode.toString() + " was released!");
+                if (keyCode == cc.KEY.back)
+                {
+                    cc.director.end();
+                }
+            }
+        }, this);
+
         return true;
     }
 });
