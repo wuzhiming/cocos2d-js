@@ -1,0 +1,2 @@
+1、安装EngineTest.apk
+2、将GameEngine.jar和gameEngine目录拷贝到sdcard根目录
