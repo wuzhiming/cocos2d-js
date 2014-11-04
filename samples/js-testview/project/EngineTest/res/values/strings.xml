@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">EngineTest</string>
+    <string name="other_activity_name">另一个进程</string>
+    <string name="cur_activity_name">当前进程</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="other_process_test_crash">其它进程Activity崩溃测试</string>
+    <string name="other_process_test">其它进程Activity测试</string>
+    <string name="cur_process_test">本进程测试</string>
+    <string name="cur_process_test_crash">本进程崩溃测试</string>
+	<string name="test_crash">点击本按钮看崩溃</string>
+</resources>
