@@ -41,26 +41,28 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View arg0) {
+				setAllButtonEnable(false);
 				Intent intent = new Intent( MainActivity.this, CurProcessActivity.class );			
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );	
 	            startActivity(intent);  
 			}
 		});
 		
-		btnOtherProcessTest.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View arg0) {
-						Intent intent = new Intent( MainActivity.this, OtherProcessActivity.class );			
-						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );	
-			            startActivity(intent); 
-					}
-				});
+		btnOtherProcessTest.setOnClickListener(new OnClickListener() {			
+			@Override
+			public void onClick(View arg0) {
+				setAllButtonEnable(false);
+				Intent intent = new Intent( MainActivity.this, OtherProcessActivity.class );			
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );	
+	            startActivity(intent); 
+			}
+		});
 		
 		btnCurProcessTestCrash.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
+				setAllButtonEnable(false);
 				Intent intent = new Intent( MainActivity.this, CurProcessCrashActivity.class );			
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );	
 	            startActivity(intent);  
@@ -70,66 +72,28 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View arg0) {
-				//loadLibrary();
+				setAllButtonEnable(false);
 				Intent intent = new Intent( MainActivity.this, OtherProcessCrashActivity.class );			
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );	
 	            startActivity(intent); 
+	            
 			}
 		});
 		
 	}
-	private void printClass(String dexPath)
+	
+	private void setAllButtonEnable(boolean enable)
 	{
-		// print all class from dex
-        DexFile dx;
-		try {
-			dx = DexFile.loadDex(dexPath, File.createTempFile("opt", "dex",
-			        getCacheDir()).getPath(), 0);
-			ClassLoader cl = getClassLoader(); 
-	        // Print all classes in the DexFile
-//	        for(Enumeration<String> classNames = dx.entries(); classNames.hasMoreElements();) {
-//	            String className = classNames.nextElement();
-//
-//	            Class clazz = dx.loadClass(className, cl); 
-//	            Log.i("class &&&&&&", "" + clazz);
-//	        }
-			Class clazz = dx.loadClass("com.example.gameengine.GameEngine", cl);
-			Constructor c1=clazz.getDeclaredConstructor(new Class[]{Context.class});   
-            c1.setAccessible(true);   
-            IGameEngine a1=(IGameEngine)c1.newInstance(new Object[]{this});
-            setContentView(a1.game_engine_get_view());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		btnCurProcessTest.setEnabled(enable);
+		btnOtherProcessTest.setEnabled(enable);
+		btnCurProcessTestCrash.setEnabled(enable);
+		btnOtherProcessTestCrash.setEnabled(enable);
 	}
 	
-	private String loadLibrary()
-	{
-		try{
-			
-	        FileInputStream fis = new FileInputStream("/sdcard/gameEngine/libcocos2djs.so");
-	        File dir = this.getDir("gameEngine", Activity.MODE_PRIVATE);
-	        File nf = new File(dir.getAbsolutePath() + File.separator + fileName);
-	        if (nf.exists())
-	        {
-	        	nf.delete();
-	        }
-	        FileOutputStream fos = new FileOutputStream(nf);
-	        byte[] buf = new byte[8 * 1014];
-	        int n;
-	        while ((n = fis.read(buf)) > 0)
-	            fos.write(buf, 0, n);
-	        fis.close();
-	        fos.close();
-	        
-	        String lib = "cocos2djs";
-	        System.load(dir.getAbsolutePath() + File.separator + fileName); 
-	        //System.loadLibrary( lib );
-	        return dir.getAbsolutePath();
-		} catch (Exception e) {
-	        e.printStackTrace();
-	    }
-		return "";
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		setAllButtonEnable(true);
 	}
 }
