@@ -18,8 +18,6 @@ public class DexLoaderHelper {
 		String dexPath = "/mnt/sdcard/GameEngine.jar";
         //dex解压释放后的目录  
         final File optimizedDexOutputPath = context.getDir("outdex", Context.MODE_WORLD_WRITEABLE);
-		
-		//printClass(dexPath);
         
         //定义DexClassLoader  
         //第一个参数：是dex压缩文件的路径  
@@ -27,9 +25,10 @@ public class DexLoaderHelper {
         //第三个参数：是C/C++依赖的本地库文件目录,可以为null  
         //第四个参数：是上一级的类加载器  
         DexClassLoader cl = new DexClassLoader(dexPath,optimizedDexOutputPath.getAbsolutePath(),null, context.getClassLoader());  
-        //DexClassLoader cl = new DexClassLoader(dexPath,optimizedDexOutputPath.getAbsolutePath(),null, ClassLoader.getSystemClassLoader());
+
+        //cl.findLibrary(name)
+        //cl.clearAssertionStatus()
         
-        System.out.println(System.getenv());
         //加载类  
         try {
             Class libProviderClazz = cl.loadClass("com.example.gameengine.GameEngine");
