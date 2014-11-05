@@ -1,22 +1,13 @@
 package com.cocos.EngineTest;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.lang.reflect.Constructor;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-
-import com.tencent.smtt.export.external.interfaces.IGameEngine;
-
-import dalvik.system.DexClassLoader;
-import dalvik.system.DexFile;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -27,9 +18,15 @@ public class MainActivity extends Activity {
 	private Button btnCurProcessTestCrash;
 	private Button btnOtherProcessTestCrash;
 	
+	private boolean newCreateFlag = false;
+	
+	private TextView tvCurStatus;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.e("MainActivity", "MainActivity onCreate");
+		newCreateFlag = true;
 		setContentView(R.layout.activity_main);
 		
 		btnCurProcessTest = (Button) this.findViewById( R.id.btn_cur_process_test);
@@ -37,13 +34,14 @@ public class MainActivity extends Activity {
 		btnCurProcessTestCrash = (Button) this.findViewById( R.id.btn_cur_process_test_crash);
 		btnOtherProcessTestCrash = (Button) this.findViewById( R.id.btn_other_process_test_crash);
 		
+		tvCurStatus = (TextView) this.findViewById( R.id.tv_curstatus);
+		
 		btnCurProcessTest.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
 				setAllButtonEnable(false);
 				Intent intent = new Intent( MainActivity.this, CurProcessActivity.class );			
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );	
 	            startActivity(intent);  
 			}
 		});
@@ -52,8 +50,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				setAllButtonEnable(false);
-				Intent intent = new Intent( MainActivity.this, OtherProcessActivity.class );			
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );	
+				Intent intent = new Intent( MainActivity.this, OtherProcessActivity.class );				
 	            startActivity(intent); 
 			}
 		});
@@ -63,8 +60,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				setAllButtonEnable(false);
-				Intent intent = new Intent( MainActivity.this, CurProcessCrashActivity.class );			
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );	
+				Intent intent = new Intent( MainActivity.this, CurProcessCrashActivity.class );		
 	            startActivity(intent);  
 			}
 		});
@@ -73,10 +69,8 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				setAllButtonEnable(false);
-				Intent intent = new Intent( MainActivity.this, OtherProcessCrashActivity.class );			
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );	
+				Intent intent = new Intent( MainActivity.this, OtherProcessCrashActivity.class );
 	            startActivity(intent); 
-	            
 			}
 		});
 		
@@ -94,6 +88,21 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		Log.e("MainActivity", "MainActivity onResume");
 		setAllButtonEnable(true);
+		if (newCreateFlag)
+		{
+			String strTemp = "本界面重新启动了";
+			this.setTitle(strTemp);
+			tvCurStatus.setText(strTemp);
+			newCreateFlag = false;
+		}
+		else
+		{
+			String strTemp = "本应用处于从后台被唤醒了";
+			this.setTitle(strTemp);
+			tvCurStatus.setText(strTemp);
+		}
+		
 	}
 }
