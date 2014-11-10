@@ -29,15 +29,19 @@ package org.cocos2dx.javascript;
 import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
 
+import android.app.Activity;
+import android.os.Bundle;
+
 import com.example.gameengine.GameEngine;
 
-public class AppActivity extends Cocos2dxActivity {
+public class AppActivity extends Activity {
 	
     @Override
-    public Cocos2dxGLSurfaceView onCreateView() {
-    	GameEngine gameEngine = new GameEngine(this);
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		GameEngine gameEngine = new GameEngine(this);
     	Cocos2dxGLSurfaceView glSurfaceView = gameEngine.game_engine_get_view();
 		setContentView(glSurfaceView);
-        return glSurfaceView;
-    }
+	}
 }
