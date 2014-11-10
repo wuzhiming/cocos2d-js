@@ -19,6 +19,8 @@
 #include "network/jsb_websocket.h"
 #include "network/jsb_socketio.h"
 
+#include "jni/java_org_cocos2dx_lib_Cocos2dxHelper.h"
+
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 #include "platform/android/CCJavascriptJavaBridge.h"
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
@@ -55,7 +57,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 	}
     vector<string> searchPaths = CCFileUtils::sharedFileUtils()->getSearchPaths();
 	vector<string>::iterator iter = searchPaths.begin();
-	searchPaths.insert(iter, "/mnt/sdcard/gameEngine");
+	searchPaths.insert(iter, getDynamicSearchPath());
 	CCFileUtils::sharedFileUtils()->setSearchPaths(searchPaths);
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / 60);
