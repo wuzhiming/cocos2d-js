@@ -15,7 +15,7 @@ public class DexLoaderHelper {
 		/**使用DexClassLoader方式加载类*/  
         //dex压缩文件的路径(可以是apk,jar,zip格式)  
         //String dexPath = Environment.getExternalStorageDirectory().toString() + File.separator + "GameEngine.jar";
-		String dexPath = "/mnt/sdcard/cocosPlay.jar";
+		String dexPath = "/mnt/sdcard/gameEnginePlay/cocosPlay.jar";
         //dex解压释放后的目录  
         final File optimizedDexOutputPath = context.getDir("outdex", Context.MODE_WORLD_WRITEABLE);
         
