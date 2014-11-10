@@ -30,6 +30,7 @@
 #include "js_bindings_core.h"
 #include "js_bindings_config.h"
 #include "cocos2d.h"
+#include "cocos-ext.h"
 #include "spidermonkey_specifics.h"
 #include "chipmunk_private.h"
 
@@ -183,6 +184,7 @@ bool jsval_to_matrix(JSContext *cx, jsval vp, cocos2d::Mat4* ret);
 bool jsval_to_vector2(JSContext *cx, jsval vp, cocos2d::Vec2* ret);
 bool jsval_to_vector3(JSContext *cx, jsval vp, cocos2d::Vec3* ret);
 bool jsval_to_blendfunc(JSContext *cx, jsval vp, cocos2d::BlendFunc* ret);
+bool jsval_to_asset(JSContext *cx, jsval vp, cocos2d::extension::Manifest::Asset* ret);
 
 template <class T>
 bool jsval_to_ccmap_string_key(JSContext *cx, jsval v, cocos2d::Map<std::string, T>* ret)
@@ -330,6 +332,7 @@ jsval matrix_to_jsval(JSContext *cx, const cocos2d::Mat4& v);
 jsval vector2_to_jsval(JSContext *cx, const cocos2d::Vec2& v);
 jsval vector3_to_jsval(JSContext *cx, const cocos2d::Vec3& v);
 jsval blendfunc_to_jsval(JSContext *cx, const cocos2d::BlendFunc& v);
+jsval asset_to_jsval(JSContext *cx, const cocos2d::extension::Manifest::Asset& v);
 
 #endif /* __JS_MANUAL_CONVERSIONS_H__ */
 

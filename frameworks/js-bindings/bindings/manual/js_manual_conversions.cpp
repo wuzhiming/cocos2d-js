@@ -1390,6 +1390,31 @@ bool jsval_to_blendfunc(JSContext *cx, jsval vp, cocos2d::BlendFunc* ret)
     ret->src = (unsigned int)src;
     ret->dst = (unsigned int)dst;
     return true;
+}
+
+bool jsval_to_asset(JSContext *cx, jsval vp, cocos2d::extension::Manifest::Asset* ret)
+{
+    JS::RootedObject tmp(cx);
+    JS::RootedValue jsmd5(cx);
+    JS::RootedValue jspath(cx);
+    JS::RootedValue jscomp(cx);
+    std::string md5, path;
+    bool compressed;
+    bool ok = vp.isObject() &&
+    JS_ValueToObject(cx, JS::RootedValue(cx, vp), &tmp) &&
+    JS_GetProperty(cx, tmp, "md5", &jsmd5) &&
+    JS_GetProperty(cx, tmp, "path", &jspath) &&
+    JS_GetProperty(cx, tmp, "compressed", &jscomp) &&
+    jsval_to_std_string(cx, jsmd5, &md5) &&
+    jsval_to_std_string(cx, jspath, &path);
+    
+    compressed = JSVAL_TO_BOOLEAN(jscomp);
+    
+    JSB_PRECONDITION3(ok, cx, false, "Error processing arguments");
+    
+    ret->md5 = md5;
+    ret->path = path;
+    ret->compressed = compressed;
     return true;
 }
 
@@ -2434,6 +2459,19 @@ jsval blendfunc_to_jsval(JSContext *cx, const cocos2d::BlendFunc& v)
     if (!tmp) return JSVAL_NULL;
     bool ok = JS_DefineProperty(cx, tmp, "src", uint32_to_jsval(cx, v.src), NULL, NULL, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
     JS_DefineProperty(cx, tmp, "dst", uint32_to_jsval(cx, v.dst), NULL, NULL, JSPROP_ENUMERATE | JSPROP_PERMANENT);
+    if (ok) {
+        return OBJECT_TO_JSVAL(tmp);
+    }
+    return JSVAL_NULL;
+}
+
+jsval asset_to_jsval(JSContext *cx, const cocos2d::extension::Manifest::Asset& asset)
+{
+    JSObject *tmp = JS_NewObject(cx, NULL, NULL, NULL);
+    if (!tmp) return JSVAL_NULL;
+    bool ok = JS_DefineProperty(cx, tmp, "md5", std_string_to_jsval(cx, asset.md5), NULL, NULL, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+              JS_DefineProperty(cx, tmp, "path", std_string_to_jsval(cx, asset.path), NULL, NULL, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+              JS_DefineProperty(cx, tmp, "compressed", BOOLEAN_TO_JSVAL(asset.compressed), NULL, NULL, JSPROP_ENUMERATE | JSPROP_PERMANENT);
     if (ok) {
         return OBJECT_TO_JSVAL(tmp);
     }
