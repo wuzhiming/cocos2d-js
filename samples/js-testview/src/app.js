@@ -78,6 +78,7 @@ var HelloWorldLayer = cc.Layer.extend({
                 if (keyCode == cc.KEY.back)
                 {
                     cc.director.end();
+                    //sys.restartVM();
                 }
             }
         }, this);
