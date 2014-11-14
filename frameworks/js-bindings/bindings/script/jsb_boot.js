@@ -1332,6 +1332,12 @@ cc._initSys = function(config, CONFIG_KEY){
         __restartVM();
     };
 
+    // clean a singal js file
+    locSys.cleanScript = function(jsFile) {
+        __cleanScript(jsFile);
+    };
+
+
     locSys.dump = function(){
         var self = this;
         var str = "";
@@ -1514,6 +1520,13 @@ cc.game = {
     /**
      * Run game.
      */
+    restart: function () {
+        //window.location.href = window.location.href;
+        __restartGame();
+    },
+    /**
+     * Run game.
+     */
     run : function(){
         var self = this;
         if(!self._prepareCalled){
@@ -1549,8 +1562,9 @@ cc.game = {
             cc.log("Failed to read or parse project.json");
             this.config = _init({});
         }
-//        cc._initDebugSetting(this.config[CONFIG_KEY.debugMode]);
+        cc._initDebugSetting(this.config[CONFIG_KEY.debugMode]);
         cc.director.setDisplayStats(this.config[CONFIG_KEY.showFPS]);
+        cc.director.setAnimationInterval(1.0/this.config[CONFIG_KEY.frameRate]);
         cc._initSys(this.config, CONFIG_KEY);
     },
     
