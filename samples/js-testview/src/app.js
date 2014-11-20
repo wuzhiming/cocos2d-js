@@ -18,6 +18,7 @@ var HelloWorldLayer = cc.Layer.extend({
             res.CloseSelected_png,
             function () {
                 cc.log("Menu is clicked!");
+                cc.game.restart();
             }, this);
         closeItem.attr({
             x: size.width - 20,
@@ -78,6 +79,7 @@ var HelloWorldLayer = cc.Layer.extend({
                 if (keyCode == cc.KEY.back)
                 {
                     cc.director.end();
+                    //
                     //sys.restartVM();
                 }
             }

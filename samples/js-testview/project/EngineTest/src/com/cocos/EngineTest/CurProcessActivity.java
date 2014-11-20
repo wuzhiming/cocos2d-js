@@ -56,23 +56,32 @@ public class CurProcessActivity extends Activity {
 	{
 		// ok. can use java vm
 		final IGameEngine gameEngine = DexLoaderHelper.getGameEngine(this);
-		View view = gameEngine.game_engine_get_view();
+		final View view = gameEngine.game_engine_get_view();
 		setContentView(view);
 		delayRun(new Runnable() {
 			
 			@Override
 			public void run() {
-				gameEngine.game_engine_destory();
-				CurProcessActivity.this.setContentView(new LinearLayout( CurProcessActivity.this ));
+				//gameEngine.game_engine_destory();
+				IGameEngine gameEngine2 = DexLoaderHelper.getGameEngine(CurProcessActivity.this);
+				setContentView(gameEngine2.game_engine_get_view());
 				delayRun(new Runnable() {
 					
 					@Override
 					public void run() {
-						startHelloWorldSingalView();
+						//CurProcessActivity.this.setContentView(new LinearLayout( CurProcessActivity.this ));
+						//setContentView(view);
+//						delayRun(new Runnable() {
+//							
+//							@Override
+//							public void run() {
+//								startHelloWorldNewView();
+//							}
+//						}, 5000);
 					}
-				}, 5000);
+				},10000);
 			}
-		}, 15000);
+		}, 20000);
 	}
 	
 	public void startHelloWorldSingalView()
@@ -90,14 +99,20 @@ public class CurProcessActivity extends Activity {
 			@Override
 			public void run() {
 				gameEngine.game_engine_destory();
-				CurProcessActivity.this.setContentView(new LinearLayout( CurProcessActivity.this ));
 				delayRun(new Runnable() {
 					
 					@Override
 					public void run() {
-						startHelloWorldSingalView();
+						CurProcessActivity.this.setContentView(new LinearLayout( CurProcessActivity.this ));
+						delayRun(new Runnable() {
+							
+							@Override
+							public void run() {
+								startHelloWorldSingalView();
+							}
+						}, 5000);
 					}
-				}, 5000);
+				},2000);
 			}
 		}, 15000);
 	}
@@ -106,7 +121,7 @@ public class CurProcessActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//startHelloWorldSingalView();
-		//startHelloWorldNewView();
-		startHelloWorldNormal();
+		startHelloWorldNewView();
+		//startHelloWorldNormal();
 	}
 }

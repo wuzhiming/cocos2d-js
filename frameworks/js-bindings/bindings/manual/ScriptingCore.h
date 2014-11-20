@@ -245,9 +245,11 @@ public:
 
     bool isFunctionOverridedInJS(JSObject* obj, const std::string& name, JSNative native);
     
+    void initRegister();
+    
  private:
     void string_report(jsval val);
-	void initRegister();
+	
 public:
     int handleNodeEvent(void* data);
     int handleComponentEvent(void* data);

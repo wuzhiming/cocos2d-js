@@ -48,12 +48,19 @@
  */
 
 cc.game.onStart = function(){
+    cc.log("game.onStart 1");
     cc.view.adjustViewPort(true);
+    cc.log("game.onStart 2");
     cc.view.setDesignResolutionSize(800, 450, cc.ResolutionPolicy.SHOW_ALL);
+    cc.log("game.onStart 3");
     cc.view.resizeWithBrowserSize(true);
+    cc.log("game.onStart 4");
     //load resources
     cc.LoaderScene.preload(g_resources, function () {
+        cc.log("game.onStart 6");
         cc.director.runScene(new HelloWorldScene());
     }, this);
+    cc.log("game.onStart 5");
 };
 cc.game.run();
+cc.log("game.onStart 11111111111");

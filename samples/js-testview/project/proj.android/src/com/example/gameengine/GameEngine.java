@@ -1,12 +1,6 @@
 package com.example.gameengine;
 
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.Vector;
-
-import org.cocos2dx.lib.Cocos2dxHelper;
 import org.cocos2dx.lib.Cocos2dxView;
 
 import android.content.Context;
@@ -42,7 +36,14 @@ public class GameEngine implements IGameEngine {
 	{
 		Log.d(Tag, "game_engine_get_view");
 		if(glView == null)
+		{
+			Log.d(Tag, "game_engine_creat_view");
 			glView = new Cocos2dxView(mCtx);
+		}
+		else
+		{
+			Log.d(Tag, "game_engine_use_exist_view");
+		}
 		return glView;
 	}
 	
@@ -73,7 +74,6 @@ public class GameEngine implements IGameEngine {
 	public void game_engine_destory()
 	{
 		glView.viewOnDestory();
-		glView = null;
 		Log.d(Tag, "game_engine_destory");
 	}
 	

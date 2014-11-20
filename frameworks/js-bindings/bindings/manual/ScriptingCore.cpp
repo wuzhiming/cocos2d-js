@@ -52,37 +52,6 @@
 #include <vector>
 #include <map>
 
-#include "jsb_cocos2dx_auto.hpp"
-#include "jsb_cocos2dx_extension_auto.hpp"
-#include "jsb_cocos2dx_builder_auto.hpp"
-#include "jsb_cocos2dx_spine_auto.hpp"
-#include "extension/jsb_cocos2dx_extension_manual.h"
-#include "cocostudio/jsb_cocos2dx_studio_manual.h"
-#include "jsb_cocos2dx_studio_auto.hpp"
-#include "jsb_cocos2dx_ui_auto.hpp"
-#include "ui/jsb_cocos2dx_ui_manual.h"
-#include "spine/jsb_cocos2dx_spine_manual.h"
-#include "cocos2d_specifics.hpp"
-#include "cocosbuilder/cocosbuilder_specifics.hpp"
-#include "chipmunk/js_bindings_chipmunk_registration.h"
-#include "localstorage/js_bindings_system_registration.h"
-#include "jsb_opengl_registration.h"
-#include "network/XMLHTTPRequest.h"
-#include "network/jsb_websocket.h"
-#include "network/jsb_socketio.h"
-#include "cocosbuilder/js_bindings_ccbreader.h"
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-#include "jsb_cocos2dx_pluginx_auto.hpp"
-#include "jsb_pluginx_extension_registration.h"
-#endif
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-#include "platform/android/CCJavascriptJavaBridge.h"
-#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
-#include "platform/ios/JavaScriptObjCBridge.h"
-#endif
-
 #ifdef ANDROID
 #include <android/log.h>
 #include <jni/JniHelper.h>
@@ -571,27 +540,28 @@ static JSSecurityCallbacks securityCallbacks = {
 };
 
 void ScriptingCore::createGlobalContext() {
+    LOGD("createGlobalContext 1");
     if (this->_cx && this->_rt) {
-        ScriptingCore::removeAllRoots(this->_cx);
-        JS_DestroyContext(this->_cx);
-        JS_DestroyRuntime(this->_rt);
+        // ScriptingCore::removeAllRoots(this->_cx);
+        // JS_DestroyContext(this->_cx);
+        // JS_DestroyRuntime(this->_rt);
         this->_cx = NULL;
         this->_rt = NULL;
     }
-    
+    LOGD("createGlobalContext 2");
     // Start the engine. Added in SpiderMonkey v25
     if (!JS_Init())
         return;
-    
+    LOGD("createGlobalContext 3");
     // Removed from Spidermonkey 19.
     //JS_SetCStringsAreUTF8();
     this->_rt = JS_NewRuntime(8L * 1024L * 1024L, JS_USE_HELPER_THREADS);
     JS_SetGCParameter(_rt, JSGC_MAX_BYTES, 0xffffffff);
-    
+    LOGD("createGlobalContext 4");
     JS_SetTrustedPrincipals(_rt, &shellTrustedPrincipals);
     JS_SetSecurityCallbacks(_rt, &securityCallbacks);
     JS_SetNativeStackQuota(_rt, JSB_MAX_STACK_QUOTA);
-    
+    LOGD("createGlobalContext 5");
     this->_cx = JS_NewContext(_rt, 8192);
     
     // Removed in Firefox v27
@@ -599,7 +569,7 @@ void ScriptingCore::createGlobalContext() {
     JS::ContextOptionsRef(_cx).setTypeInference(true);
     JS::ContextOptionsRef(_cx).setIon(true);
     JS::ContextOptionsRef(_cx).setBaseline(true);
-
+LOGD("createGlobalContext 6");
 //    JS_SetVersion(this->_cx, JSVERSION_LATEST);
     
     JS_SetErrorReporter(this->_cx, ScriptingCore::reportError);
@@ -607,14 +577,15 @@ void ScriptingCore::createGlobalContext() {
     //JS_SetGCZeal(this->_cx, 2, JS_DEFAULT_ZEAL_FREQ);
 #endif
     this->_global = NewGlobalObject(_cx);
-
+LOGD("createGlobalContext 7");
     JSAutoCompartment ac(_cx, _global);
     js::SetDefaultObjectForContext(_cx, _global);
-    
+    LOGD("createGlobalContext 8");
     for (std::vector<sc_register_sth>::iterator it = registrationList.begin(); it != registrationList.end(); it++) {
         sc_register_sth callback = *it;
         callback(this->_cx, this->_global);
     }
+    LOGD("createGlobalContext 9");
 }
 
 static std::string RemoveFileExt(const std::string& filePath) {
@@ -764,6 +735,7 @@ void ScriptingCore::reset()
 
 void ScriptingCore::restartVM()
 {
+    LOGD("----------ScriptingCore restartVM");
 	cleanup();
 	initRegister();
 	CCApplication::getInstance()->applicationDidFinishLaunching();
@@ -771,35 +743,47 @@ void ScriptingCore::restartVM()
 
 ScriptingCore::~ScriptingCore()
 {
-    cleanup();
+    LOGD("----------ScriptingCore destroy");
+    //cleanup();
+    localStorageFree();
+    _js_global_type_map.clear();
+    filename_script.clear();
+    registrationList.clear();
+    removeAllRoots(_cx);
+    initRegister();
 }
 
 void ScriptingCore::cleanup()
 {
+    LOGD("restartVM cleanup 1");
     localStorageFree();
+    LOGD("restartVM cleanup 2");
     removeAllRoots(_cx);
+    LOGD("restartVM cleanup 3");
     if (_cx)
     {
         JS_DestroyContext(_cx);
         _cx = NULL;
     }
+    LOGD("restartVM cleanup 4");
     if (_rt)
     {
         JS_DestroyRuntime(_rt);
         _rt = NULL;
     }
+    LOGD("restartVM cleanup 5");
     JS_ShutDown();
     if (_js_log_buf) {
         free(_js_log_buf);
         _js_log_buf = NULL;
     }
-
+LOGD("restartVM cleanup 6");
     for (auto iter = _js_global_type_map.begin(); iter != _js_global_type_map.end(); ++iter)
     {
         free(iter->second->jsclass);
         free(iter->second);
     }
-    
+    LOGD("restartVM cleanup 7");
     _js_global_type_map.clear();
     filename_script.clear();
     registrationList.clear();
@@ -1412,6 +1396,13 @@ int ScriptingCore::sendEvent(ScriptEvent* evt)
 		restartVM();
 		return 0;
 	}
+
+    if (evt->type == kCleanupVM)
+    {
+        cleanup();
+        initRegister();
+        return 0;
+    }
 
     JSAutoCompartment ac(_cx, _global);
     
