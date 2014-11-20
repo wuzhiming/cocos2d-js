@@ -52,6 +52,37 @@
 #include <vector>
 #include <map>
 
+#include "jsb_cocos2dx_auto.hpp"
+#include "jsb_cocos2dx_extension_auto.hpp"
+#include "jsb_cocos2dx_builder_auto.hpp"
+#include "jsb_cocos2dx_spine_auto.hpp"
+#include "extension/jsb_cocos2dx_extension_manual.h"
+#include "cocostudio/jsb_cocos2dx_studio_manual.h"
+#include "jsb_cocos2dx_studio_auto.hpp"
+#include "jsb_cocos2dx_ui_auto.hpp"
+#include "ui/jsb_cocos2dx_ui_manual.h"
+#include "spine/jsb_cocos2dx_spine_manual.h"
+#include "cocos2d_specifics.hpp"
+#include "cocosbuilder/cocosbuilder_specifics.hpp"
+#include "chipmunk/js_bindings_chipmunk_registration.h"
+#include "localstorage/js_bindings_system_registration.h"
+#include "jsb_opengl_registration.h"
+#include "network/XMLHTTPRequest.h"
+#include "network/jsb_websocket.h"
+#include "network/jsb_socketio.h"
+#include "cocosbuilder/js_bindings_ccbreader.h"
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#include "jsb_cocos2dx_pluginx_auto.hpp"
+#include "jsb_pluginx_extension_registration.h"
+#endif
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#include "platform/android/CCJavascriptJavaBridge.h"
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
+#include "platform/ios/JavaScriptObjCBridge.h"
+#endif
+
 #ifdef ANDROID
 #include <android/log.h>
 #include <jni/JniHelper.h>
@@ -372,14 +403,6 @@ bool JSB_cleanScript(JSContext *cx, uint32_t argc, jsval *vp)
 	return true;
 };
 
-bool JSB_restartGame(JSContext *cx, uint32_t argc, jsval *vp)
-{
-    JS_SET_RVAL(cx, vp, JSVAL_VOID);
-    JSB_PRECONDITION2(argc==0, cx, false, "Invalid number of arguments in executeScript");
-    ScriptingCore::getInstance()->reset();
-    return true;
-};
-
 bool JSB_core_restartVM(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSB_PRECONDITION2(argc==0, cx, false, "Invalid number of arguments in executeScript");
@@ -426,7 +449,6 @@ void registerDefaultClasses(JSContext* cx, JSObject* global) {
     JS_DefineFunction(cx, global, "__getVersion", JSBCore_version, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, global, "__restartVM", JSB_core_restartVM, 0, JSPROP_READONLY | JSPROP_PERMANENT | JSPROP_ENUMERATE );
 	JS_DefineFunction(cx, global, "__cleanScript", JSB_cleanScript, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, global, "__restartGame", JSB_restartGame, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 }
 
 static void sc_finalize(JSFreeOp *freeOp, JSObject *obj) {
@@ -450,8 +472,13 @@ ScriptingCore::ScriptingCore()
     // set utf8 strings internally (we don't need utf16)
     // XXX: Removed in SpiderMonkey 19.0
     //JS_SetCStringsAreUTF8();
-    this->addRegisterCallback(registerDefaultClasses);
-    this->_runLoop = new SimpleRunLoop();
+    initRegister();
+}
+
+void ScriptingCore::initRegister()
+{
+	this->addRegisterCallback(registerDefaultClasses);
+	this->_runLoop = new SimpleRunLoop();
 }
 
 void ScriptingCore::string_report(jsval val) {
@@ -732,23 +759,14 @@ bool ScriptingCore::runScript(const char *path, JSObject* global, JSContext* cx)
 
 void ScriptingCore::reset()
 {
-    auto director = Director::getInstance();
-    FontFNT::purgeCachedData();
-    if (director->getOpenGLView())
-    {
-        SpriteFrameCache::getInstance()->removeSpriteFrames();
-        director->getTextureCache()->removeAllTextures();
-    }
-    FileUtils::getInstance()->purgeCachedEntries();
-    director->getScheduler()->unscheduleAll();
-    
-    cleanup();
-    
-    this->addRegisterCallback(registerDefaultClasses);
-    this->_runLoop = new SimpleRunLoop();
-    
-    Application::getInstance()->run();
-    //start();
+	Director::getInstance()->restart();
+}
+
+void ScriptingCore::restartVM()
+{
+	cleanup();
+	initRegister();
+	CCApplication::getInstance()->applicationDidFinishLaunching();
 }
 
 ScriptingCore::~ScriptingCore()
@@ -1388,6 +1406,13 @@ int ScriptingCore::sendEvent(ScriptEvent* evt)
     if (NULL == evt)
         return 0;
  
+	// special type, can't use this code after JSAutoCompartment
+	if (evt->type == kRestartGame)
+	{
+		restartVM();
+		return 0;
+	}
+
     JSAutoCompartment ac(_cx, _global);
     
     switch (evt->type)
