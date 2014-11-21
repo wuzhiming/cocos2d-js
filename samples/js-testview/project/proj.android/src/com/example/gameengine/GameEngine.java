@@ -1,11 +1,6 @@
 package com.example.gameengine;
 
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.Vector;
-
 import org.cocos2dx.lib.Cocos2dxView;
 
 import android.content.Context;
@@ -20,6 +15,7 @@ public class GameEngine implements IGameEngine {
 	private Cocos2dxView glView					= 	null;
 	private Context mCtx					= 	null;
 	private IGameEngineRuntimeProxy	mProxy	= 	null;
+	
 	
 	public GameEngine(Context ctx)
 	{
@@ -40,7 +36,14 @@ public class GameEngine implements IGameEngine {
 	{
 		Log.d(Tag, "game_engine_get_view");
 		if(glView == null)
+		{
+			Log.d(Tag, "game_engine_creat_view");
 			glView = new Cocos2dxView(mCtx);
+		}
+		else
+		{
+			Log.d(Tag, "game_engine_use_exist_view");
+		}
 		return glView;
 	}
 	
@@ -70,40 +73,13 @@ public class GameEngine implements IGameEngine {
 	
 	public void game_engine_destory()
 	{
-		unloadNativeLibs("libcocos2djs.so");
+		glView.viewOnDestory();
 		Log.d(Tag, "game_engine_destory");
 	}
 	
 	public void game_engine_delete_cache()
 	{
 		Log.d(Tag, "game_engine_delete_cache");
-	}
-	
-	public static synchronized void unloadNativeLibs(String libName) {
-      try {
-       ClassLoader classLoader = GameEngine.class.getClassLoader();
-       Field field = ClassLoader.class.getDeclaredField("nativeLibraries");
-       field.setAccessible(true);
-       Vector<Object> libs = (Vector<Object>) field.get(classLoader);
-       Iterator it = libs.iterator();
-       while (it.hasNext()) {
-             Object object = it.next();
-             Field[] fs = object.getClass().getDeclaredFields();
-             for (int k = 0; k < fs.length; k++) {
-                 if (fs[k].getName().equals("name")) {
-                       fs[k].setAccessible(true);
-                       String dllPath = fs[k].get(object).toString();
-                       if (dllPath.endsWith(libName)) {
-               	            Method finalize = object.getClass().getDeclaredMethod("finalize");
-               	            finalize.setAccessible(true);
-               	            finalize.invoke(object);
-               	          }
-                     }
-               }
-       	    }
-       } catch (Throwable th) {
-         th.printStackTrace();
-       }
 	}
 	
 }

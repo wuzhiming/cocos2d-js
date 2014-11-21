@@ -10,6 +10,7 @@ import com.tencent.smtt.export.external.interfaces.IGameEngine;
 import dalvik.system.DexClassLoader;
 
 public class DexLoaderHelper {
+	static DexClassLoader cl = null;
 	public static IGameEngine getGameEngine(Context context)
 	{
 		/**使用DexClassLoader方式加载类*/  
@@ -24,8 +25,9 @@ public class DexLoaderHelper {
         //第二个参数：是dex解压缩后存放的目录  
         //第三个参数：是C/C++依赖的本地库文件目录,可以为null  
         //第四个参数：是上一级的类加载器  
-        DexClassLoader cl = new DexClassLoader(dexPath,optimizedDexOutputPath.getAbsolutePath(),null, context.getClassLoader());  
-
+        if (cl == null)
+        	cl = new DexClassLoader(dexPath,optimizedDexOutputPath.getAbsolutePath(),null, context.getClassLoader());  
+        
         //cl.findLibrary(name)
         //cl.clearAssertionStatus()
         

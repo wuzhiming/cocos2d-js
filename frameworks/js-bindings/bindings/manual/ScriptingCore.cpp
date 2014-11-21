@@ -354,6 +354,24 @@ bool JSBCore_os(JSContext *cx, uint32_t argc, jsval *vp)
     return true;
 };
 
+bool JSB_cleanScript(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	if (argc != 1)
+	{
+		JS_ReportError(cx, "Invalid number of arguments in JSB_cleanScript");
+		return false;
+	}
+	jsval *argv = JS_ARGV(cx, vp);
+	JSString *jsPath = JSVAL_TO_STRING(argv[0]);
+	JSB_PRECONDITION2(jsPath, cx, false, "Error js file in clean script");
+	JSStringWrapper wrapper(jsPath);
+	ScriptingCore::getInstance()->cleanScript(wrapper.get());
+
+	JS_SET_RVAL(cx, vp, JSVAL_VOID);
+
+	return true;
+};
+
 bool JSB_core_restartVM(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSB_PRECONDITION2(argc==0, cx, false, "Invalid number of arguments in executeScript");
@@ -394,11 +412,12 @@ void registerDefaultClasses(JSContext* cx, JSObject* global) {
     JS_DefineFunction(cx, global, "log", ScriptingCore::log, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, global, "executeScript", ScriptingCore::executeScript, 1, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, global, "forceGC", ScriptingCore::forceGC, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-
+	
     JS_DefineFunction(cx, global, "__getPlatform", JSBCore_platform, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, global, "__getOS", JSBCore_os, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, global, "__getVersion", JSBCore_version, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, global, "__restartVM", JSB_core_restartVM, 0, JSPROP_READONLY | JSPROP_PERMANENT | JSPROP_ENUMERATE );
+	JS_DefineFunction(cx, global, "__cleanScript", JSB_cleanScript, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 }
 
 static void sc_finalize(JSFreeOp *freeOp, JSObject *obj) {
@@ -422,8 +441,13 @@ ScriptingCore::ScriptingCore()
     // set utf8 strings internally (we don't need utf16)
     // XXX: Removed in SpiderMonkey 19.0
     //JS_SetCStringsAreUTF8();
-    this->addRegisterCallback(registerDefaultClasses);
-    this->_runLoop = new SimpleRunLoop();
+    initRegister();
+}
+
+void ScriptingCore::initRegister()
+{
+	this->addRegisterCallback(registerDefaultClasses);
+	this->_runLoop = new SimpleRunLoop();
 }
 
 void ScriptingCore::string_report(jsval val) {
@@ -516,27 +540,28 @@ static JSSecurityCallbacks securityCallbacks = {
 };
 
 void ScriptingCore::createGlobalContext() {
+    LOGD("createGlobalContext 1");
     if (this->_cx && this->_rt) {
-        ScriptingCore::removeAllRoots(this->_cx);
-        JS_DestroyContext(this->_cx);
-        JS_DestroyRuntime(this->_rt);
+        // ScriptingCore::removeAllRoots(this->_cx);
+        // JS_DestroyContext(this->_cx);
+        // JS_DestroyRuntime(this->_rt);
         this->_cx = NULL;
         this->_rt = NULL;
     }
-    
+    LOGD("createGlobalContext 2");
     // Start the engine. Added in SpiderMonkey v25
     if (!JS_Init())
         return;
-    
+    LOGD("createGlobalContext 3");
     // Removed from Spidermonkey 19.
     //JS_SetCStringsAreUTF8();
     this->_rt = JS_NewRuntime(8L * 1024L * 1024L, JS_USE_HELPER_THREADS);
     JS_SetGCParameter(_rt, JSGC_MAX_BYTES, 0xffffffff);
-    
+    LOGD("createGlobalContext 4");
     JS_SetTrustedPrincipals(_rt, &shellTrustedPrincipals);
     JS_SetSecurityCallbacks(_rt, &securityCallbacks);
     JS_SetNativeStackQuota(_rt, JSB_MAX_STACK_QUOTA);
-    
+    LOGD("createGlobalContext 5");
     this->_cx = JS_NewContext(_rt, 8192);
     
     // Removed in Firefox v27
@@ -544,7 +569,7 @@ void ScriptingCore::createGlobalContext() {
     JS::ContextOptionsRef(_cx).setTypeInference(true);
     JS::ContextOptionsRef(_cx).setIon(true);
     JS::ContextOptionsRef(_cx).setBaseline(true);
-
+LOGD("createGlobalContext 6");
 //    JS_SetVersion(this->_cx, JSVERSION_LATEST);
     
     JS_SetErrorReporter(this->_cx, ScriptingCore::reportError);
@@ -552,14 +577,15 @@ void ScriptingCore::createGlobalContext() {
     //JS_SetGCZeal(this->_cx, 2, JS_DEFAULT_ZEAL_FREQ);
 #endif
     this->_global = NewGlobalObject(_cx);
-
+LOGD("createGlobalContext 7");
     JSAutoCompartment ac(_cx, _global);
     js::SetDefaultObjectForContext(_cx, _global);
-    
+    LOGD("createGlobalContext 8");
     for (std::vector<sc_register_sth>::iterator it = registrationList.begin(); it != registrationList.end(); it++) {
         sc_register_sth callback = *it;
         callback(this->_cx, this->_global);
     }
+    LOGD("createGlobalContext 9");
 }
 
 static std::string RemoveFileExt(const std::string& filePath) {
@@ -704,43 +730,63 @@ bool ScriptingCore::runScript(const char *path, JSObject* global, JSContext* cx)
 
 void ScriptingCore::reset()
 {
-    cleanup();
-    start();
+	Director::getInstance()->restart();
+}
+
+void ScriptingCore::restartVM()
+{
+    LOGD("----------ScriptingCore restartVM");
+	cleanup();
+	initRegister();
+	CCApplication::getInstance()->applicationDidFinishLaunching();
 }
 
 ScriptingCore::~ScriptingCore()
 {
-    cleanup();
+    LOGD("----------ScriptingCore destroy");
+    //cleanup();
+    localStorageFree();
+    _js_global_type_map.clear();
+    filename_script.clear();
+    registrationList.clear();
+    removeAllRoots(_cx);
+    initRegister();
 }
 
 void ScriptingCore::cleanup()
 {
+    LOGD("restartVM cleanup 1");
     localStorageFree();
+    LOGD("restartVM cleanup 2");
     removeAllRoots(_cx);
+    LOGD("restartVM cleanup 3");
     if (_cx)
     {
         JS_DestroyContext(_cx);
         _cx = NULL;
     }
+    LOGD("restartVM cleanup 4");
     if (_rt)
     {
         JS_DestroyRuntime(_rt);
         _rt = NULL;
     }
+    LOGD("restartVM cleanup 5");
     JS_ShutDown();
     if (_js_log_buf) {
         free(_js_log_buf);
         _js_log_buf = NULL;
     }
-
+LOGD("restartVM cleanup 6");
     for (auto iter = _js_global_type_map.begin(); iter != _js_global_type_map.end(); ++iter)
     {
         free(iter->second->jsclass);
         free(iter->second);
     }
-    
+    LOGD("restartVM cleanup 7");
     _js_global_type_map.clear();
     filename_script.clear();
+    registrationList.clear();
 }
 
 void ScriptingCore::reportError(JSContext *cx, const char *message, JSErrorReport *report)
@@ -1344,6 +1390,20 @@ int ScriptingCore::sendEvent(ScriptEvent* evt)
     if (NULL == evt)
         return 0;
  
+	// special type, can't use this code after JSAutoCompartment
+	if (evt->type == kRestartGame)
+	{
+		restartVM();
+		return 0;
+	}
+
+    if (evt->type == kCleanupVM)
+    {
+        cleanup();
+        initRegister();
+        return 0;
+    }
+
     JSAutoCompartment ac(_cx, _global);
     
     switch (evt->type)
