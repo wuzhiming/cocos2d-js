@@ -1,0 +1,5 @@
+1、安装qq浏览器
+2、使用web服务器搭建game_engine_test.htm
+3、将gameEngine整个目录放到sdcard根目录下
+4、GameEngine.jar放到sdcard目录data/data/com.tencent.mtt/files/plugins/com.tencent.qb.plugin.cocos2d/
+5、qq浏览器访问这个页面
