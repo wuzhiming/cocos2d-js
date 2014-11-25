@@ -874,6 +874,40 @@ bool js_cocos2dx_ext_AssetsManager_getFailedAssets(JSContext *cx, uint32_t argc,
 }
 */
 
+bool js_cocos2dx_ext_Manifest_getAssets(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
+    js_proxy_t *proxy = jsb_get_js_proxy(obj);
+    cocos2d::extension::Manifest* cobj = (cocos2d::extension::Manifest *)(proxy ? proxy->ptr : NULL);
+    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_extension_Manifest_getAssets : Invalid Native Object");
+    if (argc == 0) {
+        const std::unordered_map<std::string, Manifest::Asset> &ret = cobj->getAssets();
+        jsval jsret = JSVAL_NULL;
+        do {
+            JSObject* jsRet = JS_NewObject(cx, NULL, NULL, NULL);
+            
+            for (auto it = ret.cbegin(); it != ret.cend(); ++it) {
+                std::string key = it->first;
+                const Manifest::Asset& asset = it->second;
+                
+                JS::RootedValue dictElement(cx);
+                dictElement = asset_to_jsval(cx, asset);
+                
+                if (!key.empty())
+                {
+                    JS_SetProperty(cx, jsRet, key.c_str(), dictElement);
+                }
+            }
+            jsret = OBJECT_TO_JSVAL(jsRet);
+        } while (0);
+        JS_SET_RVAL(cx, vp, jsret);
+        return true;
+    }
+    
+    JS_ReportError(cx, "js_cocos2dx_extension_AssetsManager_getFailedAssets : wrong number of arguments: %d, was expecting %d", argc, 0);
+    return false;
+}
+
 bool js_cocos2dx_ext_retain(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSObject *thisObj = JS_THIS_OBJECT(cx, vp);
@@ -1042,6 +1076,8 @@ void register_all_cocos2dx_extension_manual(JSContext* cx, JSObject* global)
     
     //JS_DefineFunction(cx, jsb_cocos2d_extension_AssetsManager_prototype, "updateAssets", js_cocos2dx_ext_AssetsManager_updateAssets, 1, JSPROP_ENUMERATE | JSPROP_PERMANENT);
     //JS_DefineFunction(cx, jsb_cocos2d_extension_AssetsManager_prototype, "getFailedAssets", js_cocos2dx_ext_AssetsManager_getFailedAssets, 0, JSPROP_ENUMERATE | JSPROP_PERMANENT);
+    
+    JS_DefineFunction(cx, jsb_cocos2d_extension_Manifest_prototype, "getAssets", js_cocos2dx_ext_Manifest_getAssets, 0, JSPROP_ENUMERATE | JSPROP_PERMANENT);
     
     JS_DefineFunction(cx, jsb_cocos2d_extension_ScrollView_prototype, "setDelegate", js_cocos2dx_CCScrollView_setDelegate, 1, JSPROP_ENUMERATE | JSPROP_PERMANENT);
     JS_DefineFunction(cx, jsb_cocos2d_extension_TableView_prototype, "setDelegate", js_cocos2dx_CCTableView_setDelegate, 1, JSPROP_ENUMERATE | JSPROP_PERMANENT);

@@ -1,0 +1,13 @@
+{
+	"packageUrl" : "http://tools.itharbors.com/moon_warriors/main_game/",
+	"remoteManifestUrl" : "http://tools.itharbors.com/moon_warriors/main_game/project.manifest",
+	"remoteVersionUrl" : "http://tools.itharbors.com/moon_warriors/main_game/version.manifest",
+	"version" : "0.0.0",
+	"engineVersion" : "3.1",
+
+	"assets" : {
+	},
+
+    "searchPaths" : [
+    ]
+}

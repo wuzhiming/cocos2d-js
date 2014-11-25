@@ -542,9 +542,9 @@ static JSSecurityCallbacks securityCallbacks = {
 void ScriptingCore::createGlobalContext() {
     LOGD("createGlobalContext 1");
     if (this->_cx && this->_rt) {
-        // ScriptingCore::removeAllRoots(this->_cx);
-        // JS_DestroyContext(this->_cx);
-        // JS_DestroyRuntime(this->_rt);
+        ScriptingCore::removeAllRoots(this->_cx);
+        JS_DestroyContext(this->_cx);
+        JS_DestroyRuntime(this->_rt);
         this->_cx = NULL;
         this->_rt = NULL;
     }
@@ -743,13 +743,7 @@ void ScriptingCore::restartVM()
 
 ScriptingCore::~ScriptingCore()
 {
-    LOGD("----------ScriptingCore destroy");
-    //cleanup();
-    localStorageFree();
-    _js_global_type_map.clear();
-    filename_script.clear();
-    registrationList.clear();
-    removeAllRoots(_cx);
+    cleanup();
     initRegister();
 }
 

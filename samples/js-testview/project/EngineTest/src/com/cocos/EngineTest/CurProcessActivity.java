@@ -62,15 +62,15 @@ public class CurProcessActivity extends Activity {
 			
 			@Override
 			public void run() {
-				//gameEngine.game_engine_destory();
+				setContentView(new LinearLayout( CurProcessActivity.this ));
 				IGameEngine gameEngine2 = DexLoaderHelper.getGameEngine(CurProcessActivity.this);
 				setContentView(gameEngine2.game_engine_get_view());
 				delayRun(new Runnable() {
 					
 					@Override
 					public void run() {
-						//CurProcessActivity.this.setContentView(new LinearLayout( CurProcessActivity.this ));
-						//setContentView(view);
+//						IGameEngine gameEngine2 = DexLoaderHelper.getGameEngine(CurProcessActivity.this);
+//						setContentView(gameEngine2.game_engine_get_view());
 //						delayRun(new Runnable() {
 //							
 //							@Override
