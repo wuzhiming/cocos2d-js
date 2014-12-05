@@ -1,11 +1,11 @@
-package com.tencent.smtt.export.external.interfaces;
+package com.tencent.smtt.export.internal.gameengine;
 
-import android.opengl.GLSurfaceView;
+import android.view.View;
 
 public interface IGameEngine {
 	void game_engine_init();
-	GLSurfaceView game_engine_get_view();
-	void game_engine_config();
+	View game_engine_get_view();
+	void game_engine_set_option(String key, String value);
 	void game_engine_onPause();
 	void game_engine_onResume();
 	void game_engine_onStop();

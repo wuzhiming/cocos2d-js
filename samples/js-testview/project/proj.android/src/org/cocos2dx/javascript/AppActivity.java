@@ -29,7 +29,7 @@ package org.cocos2dx.javascript;
 import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
 
-import com.example.gameengine.GameEngine;
+import com.tencent.qb.plugin.gameengine.GameEngine;
 
 public class AppActivity extends Cocos2dxActivity {
 	

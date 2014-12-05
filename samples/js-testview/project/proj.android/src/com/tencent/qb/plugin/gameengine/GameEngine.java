@@ -1,4 +1,4 @@
-package com.example.gameengine;
+package com.tencent.qb.plugin.gameengine;
 
 
 import org.cocos2dx.lib.Cocos2dxView;
@@ -6,8 +6,8 @@ import org.cocos2dx.lib.Cocos2dxView;
 import android.content.Context;
 import android.util.Log;
 
-import com.tencent.smtt.export.external.interfaces.IGameEngine;
-import com.tencent.smtt.export.external.interfaces.IGameEngineRuntimeProxy;
+import com.tencent.smtt.export.internal.gameengine.IGameEngine;
+import com.tencent.smtt.export.internal.gameengine.IGameEngineRuntimeProxy;
 
 public class GameEngine implements IGameEngine {
 	private String Tag						=	"GameEngine";
@@ -47,11 +47,6 @@ public class GameEngine implements IGameEngine {
 		return glView;
 	}
 	
-	public void game_engine_config()
-	{
-		Log.d(Tag, "game_engine_config");
-	}
-	
 	public void game_engine_onPause()
 	{
 		glView.viewOnPause();
@@ -60,7 +55,7 @@ public class GameEngine implements IGameEngine {
 	
 	public void game_engine_onResume()
 	{
-		glView.vewOnResume();
+		glView.viewOnResume();
 		Log.d(Tag, "game_engine_onResume");
 	}
 	
@@ -76,11 +71,18 @@ public class GameEngine implements IGameEngine {
 	public void game_engine_destory()
 	{
 		Log.d(Tag, "game_engine_destory");
+//		glView.viewOnDestory();
 	}
 	
 	public void game_engine_delete_cache()
 	{
 		Log.d(Tag, "game_engine_delete_cache");
+	}
+
+	@Override
+	public void game_engine_set_option(String key, String value) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
