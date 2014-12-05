@@ -31,6 +31,7 @@ LOCAL_SRC_FILES := auto/jsb_cocos2dx_auto.cpp \
                    manual/extension/jsb_cocos2dx_extension_manual.cpp \
                    manual/localstorage/js_bindings_system_functions.cpp \
                    manual/localstorage/js_bindings_system_registration.cpp \
+                   manual/loader/js_bindings_loader.cpp \
                    manual/network/jsb_socketio.cpp \
                    manual/network/jsb_websocket.cpp \
                    manual/network/XMLHTTPRequest.cpp \
@@ -45,6 +46,7 @@ LOCAL_EXPORT_CFLAGS := -DCOCOS2D_JAVASCRIPT
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/manual \
                     $(LOCAL_PATH)/auto \
                     $(LOCAL_PATH)/../cocos2d-x/cocos/2d \
+                    $(LOCAL_PATH)/../cocos2d-x/cocos/platform/android/jni \
                     $(LOCAL_PATH)/../cocos2d-x/cocos/base \
                     $(LOCAL_PATH)/../cocos2d-x/cocos/ui \
                     $(LOCAL_PATH)/../cocos2d-x/cocos/audio/include \
