@@ -62,7 +62,7 @@ public class GameEngine implements IGameEngine {
 	public void game_engine_onStop()
 	{
 		Log.d(Tag, "game_engine_onStop");
-		
+		glView.viewOnDestory();
 		//glView.viewOnDestory();
 		//if(mProxy != null)
 			//mProxy.x5_destory_game_engine();
@@ -71,7 +71,7 @@ public class GameEngine implements IGameEngine {
 	public void game_engine_destory()
 	{
 		Log.d(Tag, "game_engine_destory");
-//		glView.viewOnDestory();
+		glView.viewOnDestory(); 
 	}
 	
 	public void game_engine_delete_cache()

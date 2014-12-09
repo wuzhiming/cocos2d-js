@@ -13,7 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import com.tencent.smtt.export.external.interfaces.IGameEngine;
+import com.tencent.smtt.export.internal.gameengine.*;
 
 import android.app.Activity;
 import android.os.Bundle;

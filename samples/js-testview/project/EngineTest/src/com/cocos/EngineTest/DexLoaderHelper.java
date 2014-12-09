@@ -5,7 +5,7 @@ import java.lang.reflect.Constructor;
 
 import android.content.Context;
 
-import com.tencent.smtt.export.external.interfaces.IGameEngine;
+import com.tencent.smtt.export.internal.gameengine.*;
 
 import dalvik.system.DexClassLoader;
 
@@ -33,7 +33,7 @@ public class DexLoaderHelper {
         
         //加载类  
         try {
-            Class libProviderClazz = cl.loadClass("com.example.gameengine.GameEngine");
+            Class libProviderClazz = cl.loadClass("com.tencent.qb.plugin.gameengine.GameEngine");
             Constructor gameEngineConstructor = libProviderClazz.getDeclaredConstructor(new Class[]{Context.class});   
             gameEngineConstructor.setAccessible(true);   
             IGameEngine gameEngine = (IGameEngine)gameEngineConstructor.newInstance(new Object[]{context});

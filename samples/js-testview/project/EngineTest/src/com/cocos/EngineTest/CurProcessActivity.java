@@ -1,6 +1,6 @@
 package com.cocos.EngineTest;
 
-import com.tencent.smtt.export.external.interfaces.IGameEngine;
+import com.tencent.smtt.export.internal.gameengine.*;
 
 import android.app.Activity;
 import android.os.Bundle;
