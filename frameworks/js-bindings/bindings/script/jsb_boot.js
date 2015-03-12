@@ -31,19 +31,106 @@ var window = window || this;
  * Iterate over an object or an array, executing a function for each matched element.
  * @param {object|array} obj
  * @param {function} iterator
- * @param [{object}] context
+ * @param {object} [context]
  */
-cc.each = function(obj, iterator, context){
-    if(!obj) return;
-    if(obj instanceof Array){
-        for(var i = 0, li = obj.length; i < li; i++){
-            if(iterator.call(context, obj[i], i) === false) return;
+cc.each = function (obj, iterator, context) {
+    if (!obj)
+        return;
+    if (obj instanceof Array) {
+        for (var i = 0, li = obj.length; i < li; i++) {
+            if (iterator.call(context, obj[i], i) === false)
+                return;
         }
-    }else{
+    } else {
         for (var key in obj) {
-            if(iterator.call(context, obj[key], key) === false) return;
+            if (iterator.call(context, obj[key], key) === false)
+                return;
         }
     }
+};
+
+/**
+ * Copy all of the properties in source objects to target object and return the target object.
+ * @param {object} target
+ * @param {object} *sources
+ * @returns {object}
+ */
+cc.extend = function(target) {
+    var sources = arguments.length >= 2 ? Array.prototype.slice.call(arguments, 1) : [];
+
+    cc.each(sources, function(src) {
+        for(var key in src) {
+            if (src.hasOwnProperty(key)) {
+                target[key] = src[key];
+            }
+        }
+    });
+    return target;
+};
+
+/**
+ * Check the obj whether is function or not
+ * @param {*} obj
+ * @returns {boolean}
+ */
+cc.isFunction = function(obj) {
+    return typeof obj == 'function';
+};
+
+/**
+ * Check the obj whether is number or not
+ * @param {*} obj
+ * @returns {boolean}
+ */
+cc.isNumber = function(obj) {
+    return typeof obj == 'number' || Object.prototype.toString.call(obj) == '[object Number]';
+};
+
+/**
+ * Check the obj whether is string or not
+ * @param {*} obj
+ * @returns {boolean}
+ */
+cc.isString = function(obj) {
+    return typeof obj == 'string' || Object.prototype.toString.call(obj) == '[object String]';
+};
+
+/**
+ * Check the obj whether is array or not
+ * @param {*} obj
+ * @returns {boolean}
+ */
+cc.isArray = function(obj) {
+    return Array.isArray(obj) ||
+        (typeof obj === 'object' && objectToString(obj) === '[object Array]');
+};
+
+/**
+ * Check the obj whether is undefined or not
+ * @param {*} obj
+ * @returns {boolean}
+ */
+cc.isUndefined = function(obj) {
+    return typeof obj === 'undefined';
+};
+
+/**
+ * Check the obj whether is object or not
+ * @param {*} obj
+ * @returns {boolean}
+ */
+cc.isObject = function(obj) {
+    return obj.__nativeObj !== undefined ||
+        ( typeof obj === "object" && Object.prototype.toString.call(obj) === '[object Object]' );
+};
+
+/**
+ * Check the url whether cross origin
+ * @param {String} url
+ * @returns {boolean}
+ */
+cc.isCrossOrigin = function (url) {
+    return false;
 };
 
 /**
@@ -487,10 +574,11 @@ cc.loader = {
             });
         }
         else {
-            var tex = cc.textureCache._addImage(url);
-            if (tex instanceof cc.Texture2D)
-                cb && cb(null, tex);
-            else cb && cb("Load image failed");
+            cc.textureCache._addImageAsync(url, function (tex){
+                if (tex instanceof cc.Texture2D)
+                    cb && cb(null, tex);
+                else cb && cb("Load image failed");
+            });
         }
     },
     /**
@@ -822,6 +910,7 @@ cc.view.getTargetDensityDPI = function() {return cc.DENSITYDPI_DEVICE;};
  * @name cc.eventManager
  */
 cc.eventManager = cc.director.getEventDispatcher();
+
 /**
  * @type {cc.AudioEngine}
  * @name cc.audioEngine
@@ -844,8 +933,8 @@ cc.configuration = cc.Configuration.getInstance();
  * cc.textureCache is the global cache for cc.Texture2D
  */
 cc.textureCache = cc.director.getTextureCache();
-cc.TextureCache.prototype._addImage = cc.TextureCache.prototype.addImage;
-cc.TextureCache.prototype.addImage = function(url, cb, target) {
+cc.TextureCache.prototype._addImageAsync = cc.TextureCache.prototype.addImageAsync;
+cc.TextureCache.prototype.addImageAsync = function(url, cb, target) {
     var localTex = null;
     cc.loader.loadImg(url, function(err, tex) {
         if (err) tex = null;
@@ -1107,6 +1196,7 @@ cc._initSys = function(config, CONFIG_KEY){
      * @type {string}
      */
     locSys.OS_ANDROID = "Android";
+    locSys.OS_WP8 = "WP8";
     locSys.OS_UNKNOWN = "unknown";
 
     /**
@@ -1258,7 +1348,7 @@ cc._initSys = function(config, CONFIG_KEY){
         cc.log(str);
     }
 
-    locSys.isMobile = (locSys.os == locSys.OS_ANDROID || locSys.os == locSys.OS_IOS) ? true : false;
+    locSys.isMobile = (locSys.os == locSys.OS_ANDROID || locSys.os == locSys.OS_IOS || locSys.os == locSys.OS_WP8) ? true : false;
 
     locSys.language = (function(){
         var language = cc.Application.getInstance().getCurrentLanguage();
@@ -1425,13 +1515,14 @@ cc.game = {
         config[CONFIG_KEY.frameRate] = frameRate;
         cc.director.setAnimationInterval(1.0/frameRate);
     },
+    
     /**
-     * Run game.
+     * Restart game.
      */
     restart: function () {
-        //window.location.href = window.location.href;
         __restartVM();
     },
+    
     /**
      * Run game.
      */
@@ -1445,6 +1536,7 @@ cc.game = {
             self.onStart();
         }
     },
+    
     /**
      * Init config.
      * @param cb
@@ -1535,11 +1627,6 @@ jsb.urlRegExp = new RegExp(
         // user:pass authentication
         "(?:\\S+(?::\\S*)?@)?" +
         "(?:" +
-            // IP address exclusion
-            // private & local networks
-            "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +
-            "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +
-            "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
             // IP address dotted notation octets
             // excludes loopback network 0.0.0.0
             // excludes reserved space >= 224.0.0.0

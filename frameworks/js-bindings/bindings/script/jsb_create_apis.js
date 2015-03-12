@@ -47,12 +47,16 @@ _p._ctor = function(color, w, h) {
 
 
 _p = cc.LayerGradient.prototype;
-_p._ctor = function(start, end, v) {
+_p._ctor = function(start, end, v, colorStops) {
     start = start || cc.color(0,0,0,255);
     end = end || cc.color(0,0,0,255);
     v = v || cc.p(0, -1);
 
     this.initWithColor(start, end, v);
+
+    if (colorStops instanceof Array) {
+        cc.log("Warning: Color stops parameter is not supported in JSB.");
+    }
 };
 
 
@@ -99,7 +103,7 @@ _p._ctor = function(fileName, rect) {
 
 _p = cc.SpriteBatchNode.prototype;
 _p._ctor = function(fileImage, capacity) {
-    capacity = capacity || cc.DEFAULT_SPRITE_BATCH_CAPACITY;
+    capacity = capacity || cc.SpriteBatchNode.DEFAULT_CAPACITY;
     if (typeof(fileImage) == "string")
         this.initWithFile(fileImage, capacity);
     else
@@ -232,8 +236,14 @@ _p._ctor = function(normalImage, selectedImage, three, four, five) {
             callback = three;
         }
         else if (five === undefined) {
-            callback = three;
-            target = four;
+            if (typeof three === "function") {
+                callback = three;
+                target = four;
+            }
+            else {
+                disabledImage = three;
+                callback = four;
+            }
         }
         else if (five) {
             disabledImage = three;
@@ -735,6 +745,10 @@ cc.Animation.prototype._ctor = function(frames, delay, loops) {
     }
 };
 
+cc.AnimationFrame.prototype._ctor = function(spriteFrame, delayUnits, userInfo) {
+    delayUnits !== undefined && this.initWithSpriteFrame(spriteFrame, delayUnits, userInfo);
+};
+
 
 /************************  Nodes  *************************/
 
@@ -798,7 +812,11 @@ cc.Touch.prototype._ctor = function(x, y, id) {
 };
 
 cc.GLProgram.prototype._ctor = function(vShaderFileName, fShaderFileName) {
-    vShaderFileName !== undefined && fShaderFileName !== undefined && cc.GLProgram.prototype.init.call(this, vShaderFileName, fShaderFileName);
+    if(vShaderFileName !== undefined && fShaderFileName !== undefined){
+        cc.GLProgram.prototype.init.call(this, vShaderFileName, fShaderFileName);
+        cc.GLProgram.prototype.link.call(this);
+        cc.GLProgram.prototype.updateUniforms.call(this);
+    } 
 };
 
 
